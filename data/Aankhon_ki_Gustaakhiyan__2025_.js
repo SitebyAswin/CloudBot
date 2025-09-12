@@ -30,5 +30,5 @@ module.exports = {
     }
   ],
   "ratings": {},
-  "display_name": "🎬 Movie: 🎬 Movie: Aankhon ki Gustaakhiyan [2025]"
+  "display_name": "Aankhon ki Gustaakhiyan [2025]"
 };

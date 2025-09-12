@@ -38,5 +38,5 @@ module.exports = {
     }
   ],
   "ratings": {},
-  "display_name": "🎬 Movie: 🎬 Movie: Footage [2024]"
+  "display_name": "Footage [2024]"
 };

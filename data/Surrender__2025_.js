@@ -30,5 +30,5 @@ module.exports = {
     }
   ],
   "ratings": {},
-  "display_name": "🎬 TV Series: 🎬 Movie: Surrender [2025]"
+  "display_name": "Surrender [2025]"
 };
