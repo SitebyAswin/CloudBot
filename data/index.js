@@ -53,11 +53,7 @@ module.exports = {
     "ILM7DVHJPJRG": "Movie Ne Zha II_ILM7DVHJPJRG",
     "P5CIZ7CV75PK": "Movie Ne Zha_P5CIZ7CV75PK",
     "Q58ID7ACHMO7": "Movie Oho Enthan Baby_Q58ID7ACHMO7",
-    "651ABVFL4M1R": "Movie Nadikar_651ABVFL4M1R",
-    "DB6WO66AL86X": "Title The Pickup 2025_DB6WO66AL86X",
-    "IHGAOM3EM1NB": "Title Paranthu Po 2025_IHGAOM3EM1NB",
-    "CD5AY1US0YOT": "Title My Oxford Year 2025_CD5AY1US0YOT",
-    "COC6DI81VET0": "Title Oh Bhama Ayyo Rama 2025_COC6DI81VET0"
+    "651ABVFL4M1R": "Movie Nadikar_651ABVFL4M1R"
   },
   "order": [
     "Kingdom [2025]",
@@ -113,10 +109,6 @@ module.exports = {
     "Movie Ne Zha II_ILM7DVHJPJRG",
     "Movie Ne Zha_P5CIZ7CV75PK",
     "Movie Oho Enthan Baby_Q58ID7ACHMO7",
-    "Movie Nadikar_651ABVFL4M1R",
-    "Title The Pickup 2025_DB6WO66AL86X",
-    "Title Paranthu Po 2025_IHGAOM3EM1NB",
-    "Title My Oxford Year 2025_CD5AY1US0YOT",
-    "Title Oh Bhama Ayyo Rama 2025_COC6DI81VET0"
+    "Movie Nadikar_651ABVFL4M1R"
   ]
 };

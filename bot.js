@@ -1,4 +1,4 @@
-// bot.js — updated: metadata feature removed, user index paginated
+// bot.js — full updated bot with fixes for /start, /browse, inline placeholder, and regex bug fixed.
 // Requirements:
 //   npm install dotenv node-telegram-bot-api
 // .env should contain:
@@ -8,6 +8,8 @@
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
+const { URL } = require('url');
 const TelegramBot = require('node-telegram-bot-api');
 const crypto = require('crypto');
 
@@ -18,6 +20,7 @@ const USER_DIR = path.join(__dirname, 'userdata');
 if (!fs.existsSync(USER_DIR)) fs.mkdirSync(USER_DIR, { recursive: true });
 
 const INDEX_FILE = path.join(DATA_DIR, 'index.js');
+const META_FILE = path.join(DATA_DIR, 'meta.json');
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_ID = process.env.ADMIN_ID ? Number(process.env.ADMIN_ID) : NaN;
@@ -38,6 +41,10 @@ function readIndex() {
   try { delete require.cache[require.resolve(INDEX_FILE)]; return require(INDEX_FILE); } catch { return { tokens: {}, order: [] }; }
 }
 function writeIndex(obj) { atomicWriteFileSync(INDEX_FILE, 'module.exports = ' + JSON.stringify(obj, null, 2) + ';\n'); }
+function readMeta() {
+  try { return fs.existsSync(META_FILE) ? JSON.parse(fs.readFileSync(META_FILE)) : { batch_meta: {}, release_cache: {}, index_page_size: 8 }; } catch { return { batch_meta: {}, release_cache: {}, index_page_size: 8 }; }
+}
+function writeMeta(obj) { atomicWriteFileSync(META_FILE, JSON.stringify(obj, null, 2)); }
 
 // ---------- token & filenames ----------
 function generateToken(len = 12) {
@@ -68,7 +75,7 @@ function filenameToPath(filename) {
 }
 
 function createBatchFile(filename, token, adminId) {
-  const obj = { token, filename, adminId, createdAt: new Date().toISOString(), files: [], display_name: filename };
+  const obj = { token, filename, adminId, createdAt: new Date().toISOString(), files: [], ratings: {}, display_name: filename };
   atomicWriteFileSync(filenameToPath(filename), 'module.exports = ' + JSON.stringify(obj, null, 2) + ';\n');
   return obj;
 }
@@ -155,7 +162,7 @@ function formatCaptionHtmlForPreview(rawCaption) {
   if (!rawCaption) return '';
   const text = String(rawCaption);
   const linesRaw = text.split(/\r?\n/);
-  const lines = linesRaw.map(l => l.replace(/\s+$/,'').replace(/^\s+/,'')); 
+  const lines = linesRaw.map(l => l.replace(/\s+$/,'').replace(/^\s+/,''));
   let storyIndex = -1;
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
@@ -191,6 +198,36 @@ async function detectNameFromFile(fileMeta) {
         if (sanitized) return { rawLine: raw, sanitized };
         return { rawLine: raw, sanitized: null };
       }
+    }
+    const fn = (fileMeta.file_name||'').toLowerCase();
+    const mime = (fileMeta.mime_type||'').toLowerCase();
+    const textLike = mime.startsWith('text/') || /\.(txt|nfo|srt|ass|sub|md|csv|log)$/i.test(fn);
+    if (fileMeta.file_id && textLike) {
+      try {
+        const fileUrl = await bot.getFileLink(fileMeta.file_id);
+        const firstChunk = await new Promise((resolve, reject) => {
+          let got = '';
+          const req = https.get(fileUrl, (res) => {
+            res.setTimeout(5000);
+            res.on('data', (d) => {
+              try { got += d.toString('utf8'); } catch (e) {}
+              if (got.length > 8192) { req.destroy(); resolve(got.slice(0,8192)); }
+            });
+            res.on('end', () => resolve(got));
+          });
+          req.on('error', (err) => reject(err));
+          req.on('timeout', () => { req.destroy(); resolve(got); });
+        });
+        if (firstChunk && firstChunk.length>0) {
+          const lines = firstChunk.split(/\r?\n/).map(l=>l.trim()).filter(l=>l && l.length>0);
+          if (lines.length>0) {
+            const raw = lines[0].trim().slice(0,200);
+            const sanitized = sanitizeFilenameForDisk(raw) || null;
+            if (sanitized) return { rawLine: raw, sanitized };
+            return { rawLine: raw, sanitized: null };
+          }
+        }
+      } catch (e) { console.warn('detectNameFromFile: read failed', e && e.message); }
     }
     if (fileMeta && fileMeta.file_name) {
       const base = String(fileMeta.file_name).replace(/\.[^/.]+$/, '');
@@ -285,29 +322,15 @@ async function sendBatchItemToChat(chatId, batch, f) {
 
 // ---------- browse helpers ----------
 const browseSessions = {};
-
-/*
-  Modified makeBrowseKeyboardForIndex to accept an isAdmin flag.
-  If isAdmin === true -> show two view-index buttons (user-style + admin-style).
-  If isAdmin === false -> show single user-style view action.
-*/
-function makeBrowseKeyboardForIndex(pos, total, token, isAdmin = false) {
+function makeBrowseKeyboardForIndex(pos, total, token) {
   const left = { text: '◀️', callback_data: 'browse_left' };
   const view = { text: '🔲 View files', callback_data: 'browse_view' };
   const right = { text: '▶️', callback_data: 'browse_right' };
   const random = { text: '🎲 Random', callback_data: 'browse_random' };
   const viewList = { text: '📃 View as list', callback_data: 'browse_list' };
-
-  const viewIndexUser = { text: '🗂️ View index (User)', callback_data: 'view_index_user' };
-  const viewIndexAdmin = { text: '🗂️ View index (Admin)', callback_data: 'view_index_admin' };
-
-  if (isAdmin) {
-    return { inline_keyboard: [[left, view, right], [random, viewList], [viewIndexUser, viewIndexAdmin]] };
-  } else {
-    return { inline_keyboard: [[left, view, right], [random, viewList], [viewIndexUser]] };
-  }
+  const viewIndex = { text: '🗂️ View index', callback_data: 'view_index' };
+  return { inline_keyboard: [[left, view, right], [random, viewList], [viewIndex]] };
 }
-
 function buildFilesKeyboardForBatch(token, batch, asAdmin = false) {
   const buttons = [];
   for (let i = 0; i < (batch.files||[]).length; i++) {
@@ -387,67 +410,165 @@ function recordUserAction(user, action) {
   } catch (e) { console.warn('recordUserAction failed', e && e.message); }
 }
 
-// ---------- user index pagination helper ----------
-/**
- * Build a paginated user-friendly index page (HTML)
- * Returns: { text, keyboard, page, totalPages, pageSize }
- */
-function buildUserIndexPage(page = 0, pageSize = 15) {
-  const idx = readIndex();
-  const order = Array.isArray(idx.order) ? idx.order.slice() : [];
-  const total = order.length;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  let p = Number(page) || 0;
-  if (p < 0) p = 0;
-  if (p >= totalPages) p = totalPages - 1;
-
-  const start = p * pageSize;
-  const slice = order.slice(start, start + pageSize);
-
-  const lines = [];
-  for (let i = 0; i < slice.length; i++) {
-    const globalIndex = start + i;
-    const fname = slice[i];
-    const batch = readBatchFile(fname) || { filename: fname, display_name: fname };
-    const display = escapeHtml(batch.display_name || batch.filename);
-    const token = Object.keys(idx.tokens || {}).find(t => idx.tokens[t] === fname) || '';
-    const url = BOT_USERNAME
-      ? `https://t.me/${BOT_USERNAME}?start=${encodeURIComponent(token)}`
-      : `https://t.me/Testerforcloudbot?start=${encodeURIComponent(token)}`;
-
-    // Bold title and bold link text (link itself is clickable)
-    lines.push(`<b>${globalIndex + 1}. ${display} - </b><a href="${url}"><b>Click here to view 👈</b></a>`);
-  }
-
-  const text = lines.join('\n');
-
-  // navigation row
-  const navRow = [];
-  if (p > 0) navRow.push({ text: '⬅️ Prev', callback_data: `view_index_user_page_${p - 1}` });
-  navRow.push({ text: `Page ${p + 1}/${totalPages}`, callback_data: `view_index_user_page_${p}` });
-  if (p < totalPages - 1) navRow.push({ text: 'Next ➡️', callback_data: `view_index_user_page_${p + 1}` });
-
-  // admin access and close button
-  const adminRow = [{ text: 'View index (Admin)', callback_data: 'view_index_admin' }];
-  const closeRow = [{ text: 'Close', callback_data: 'close_index_view' }];
-
-  const keyboard = {
-    inline_keyboard: [
-      navRow,
-      adminRow,
-      closeRow
-    ]
-  };
-
-  return { text, keyboard, page: p, totalPages, pageSize };
+// ---------- Wikipedia metadata fetcher (background) ----------
+function httpGetJson(url) {
+  return new Promise((resolve, reject) => {
+    try {
+      const u = new URL(url);
+      const req = https.get(u, (res) => {
+        let body = '';
+        res.setEncoding('utf8');
+        res.on('data', (d) => body += d);
+        res.on('end', () => {
+          try { const j = JSON.parse(body); resolve(j); } catch (e) { resolve(null); }
+        });
+      });
+      req.on('error', (err) => reject(err));
+      req.on('timeout', () => { req.destroy(); resolve(null); });
+    } catch (e) { resolve(null); }
+  });
+}
+function httpGet(url) {
+  return new Promise((resolve, reject) => {
+    try {
+      const u = new URL(url);
+      const req = https.get(u, (res) => {
+        let body = '';
+        res.setEncoding('utf8');
+        res.on('data', (d) => body += d);
+        res.on('end', () => resolve(body));
+      });
+      req.on('error', (err) => reject(err));
+      req.on('timeout', () => { req.destroy(); resolve(null); });
+    } catch (e) { resolve(null); }
+  });
 }
 
-// ---------- index builder (quick) ----------
-// Note: metadata feature was removed; index shows display_name and counts only.
+async function wikiSearchTopPage(title) {
+  try {
+    const q = encodeURIComponent(title);
+    const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${q}&format=json&utf8=1&srlimit=5`;
+    const res = await httpGetJson(url);
+    if (res && res.query && res.query.search && res.query.search.length > 0) {
+      return res.query.search[0];
+    }
+  } catch (e) { /* ignore */ }
+  return null;
+}
+async function wikiGetPageHtmlById(pageid) {
+  try {
+    const url = `https://en.wikipedia.org/w/api.php?action=parse&pageid=${pageid}&prop=text&format=json`;
+    const res = await httpGetJson(url);
+    if (res && res.parse && res.parse.text && res.parse.text['*']) return res.parse.text['*'];
+  } catch (e) { /* ignore */ }
+  return null;
+}
+function extractFromInfoboxHtml(html, fieldNames) {
+  try {
+    const rxTh = /<th[^>]*>(.*?)<\/th>\s*<td[^>]*>(.*?)<\/td>/gi;
+    let m;
+    while ((m = rxTh.exec(html))) {
+      const th = m[1].replace(/<[^>]+>/g,'').trim();
+      const td = m[2].replace(/<[^>]+>/g,'').trim();
+      for (const fn of fieldNames) {
+        if (th.toLowerCase().includes(fn.toLowerCase())) return td;
+      }
+    }
+  } catch (e) { /* ignore */ }
+  return null;
+}
+function stripTags(s) { return s ? s.replace(/<[^>]+>/g, '').replace(/\s+/g,' ').trim() : s; }
+
+async function queryWikiDetailsForTitle(title) {
+  try {
+    const top = await wikiSearchTopPage(title);
+    if (!top) return null;
+    const pageId = top.pageid;
+    const html = await wikiGetPageHtmlById(pageId);
+    if (!html) return null;
+    const introMatch = html.match(/<p>(.*?)<\/p>/i);
+    const intro = introMatch ? stripTags(introMatch[1]) : '';
+    const director = extractFromInfoboxHtml(html, ['Directed by','Director','Directed']);
+    const writer = extractFromInfoboxHtml(html, ['Written by','Writer','Screenplay by','Story by']);
+    const starring = extractFromInfoboxHtml(html, ['Starring','Cast','Cast and characters']);
+    let release = extractFromInfoboxHtml(html, ['Release date','Release','Released']);
+    if (release) release = release.replace(/\s*\(.*?\)/g,'').replace(/\s+/g,' ').trim();
+    const runtime = extractFromInfoboxHtml(html, ['Running time','Runtime','Duration']);
+    const language = extractFromInfoboxHtml(html, ['Language','Languages']);
+    const country = extractFromInfoboxHtml(html, ['Country']);
+    const genre = extractFromInfoboxHtml(html, ['Genre','Genres','Category']);
+    const yearMatch = (top.snippet || '').match(/\b(19|20)\d{2}\b/) || (intro && intro.match(/\b(19|20)\d{2}\b/));
+    const year = yearMatch ? Number((yearMatch[0] || '').match(/\d{4}/)[0]) : null;
+
+    const displayTitle = top.title || title;
+    const languagesList = language ? language.split(/[,;\/]/).map(s=>s.trim()).filter(Boolean) : [];
+    const genresList = genre ? genre.split(/[,;\/]/).map(s=>s.trim()).filter(Boolean) : [];
+    const actorsList = starring ? starring.split(/[,;\/\n]/).map(s=>s.trim()).filter(Boolean) : [];
+
+    let out = '';
+    out += `🎪Tɪᴛʟᴇ  : ${displayTitle}\n`;
+    if (runtime || languagesList.length || genresList.length) {
+      const parts = [];
+      if (runtime) parts.push(runtime);
+      if (languagesList.length) parts.push(languagesList.join(', '));
+      if (genresList.length) parts.push(genresList.join(' | '));
+      out += `⏱ Info : ${parts.join(' | ')}\n`;
+    }
+    if (genresList.length) out += `⚙ Gᴇɴʀᴇ  : ${genresList.join(' ')}\n`;
+    if (intro) out += `🗒 Sᴛᴏʀy Lɪɴᴇ  : ${intro}\n`;
+    if (release) out += `📀 Rᴇʟᴇᴀꜱᴇ Dᴀᴛᴇ : ${release}\n`;
+    if (director) out += `🎬 Dɪʀᴇᴄᴛᴏʀ : ${director}\n`;
+    if (writer) out += `🎞️ Wʀɪᴛᴇʀ : ${writer}\n`;
+    if (actorsList.length) out += `👯 Aᴄᴛᴏʀꜱ : ${actorsList.join(' ')}\n`;
+    return { formatted: out.trim(), year };
+  } catch (e) { console.warn('wiki query failed', e && e.message); return null; }
+}
+
+let backgroundQueueRunning = false;
+async function backgroundFetchMetadataForMissing() {
+  if (backgroundQueueRunning) return;
+  backgroundQueueRunning = true;
+  try {
+    const idx = readIndex();
+    const meta = readMeta();
+    meta.batch_meta = meta.batch_meta || {};
+    const toFetch = [];
+    for (const fname of (idx.order || [])) {
+      if (!meta.batch_meta[fname]) toFetch.push(fname);
+    }
+    for (const fname of toFetch) {
+      try {
+        const batch = readBatchFile(fname);
+        if (!batch) { meta.batch_meta[fname] = null; writeMeta(meta); continue; }
+        const titleCandidate = batch.display_name || batch.filename || '';
+        const res = await queryWikiDetailsForTitle(titleCandidate);
+        if (res && res.formatted) {
+          meta.batch_meta[fname] = res.formatted;
+          meta.release_cache = meta.release_cache || {};
+          meta.release_cache[fname] = res.year || null;
+          writeMeta(meta);
+          console.log('Fetched metadata for', fname);
+        } else {
+          meta.batch_meta[fname] = null;
+          writeMeta(meta);
+        }
+        await new Promise(r => setTimeout(r, 900));
+      } catch (e) {
+        console.warn('backgroundFetchMetadataForMissing item failed', e && e.message);
+      }
+    }
+  } catch (e) { console.warn('backgroundFetchMetadataForMissing failed', e && e.message); }
+  backgroundQueueRunning = false;
+}
+setImmediate(() => { backgroundFetchMetadataForMissing().catch(()=>{}); });
+setInterval(() => { backgroundFetchMetadataForMissing().catch(()=>{}); }, 1000 * 60 * 20);
+
+// ---------- index builder (quick, uses cached meta) ----------
 function buildIndexTextAndKeyboardQuick(page = 0, requesterIsAdmin = false) {
   const idx = readIndex();
+  const meta = readMeta();
   const order = Array.isArray(idx.order) ? idx.order.slice() : [];
-  const pageSize = 8;
+  const pageSize = (meta && meta.index_page_size) ? Number(meta.index_page_size) : 8;
   const total = order.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   let p = Number(page) || 0;
@@ -463,7 +584,8 @@ function buildIndexTextAndKeyboardQuick(page = 0, requesterIsAdmin = false) {
     const fname = slice[i];
     const batch = readBatchFile(fname) || { filename: fname, display_name: fname, files: [] };
     const display = batch.display_name || fname;
-    lines.push(`${globalIndex+1}. ${display}`);
+    const year = (meta && meta.release_cache && Object.prototype.hasOwnProperty.call(meta.release_cache, fname) && meta.release_cache[fname]) ? String(meta.release_cache[fname]) : '----';
+    lines.push(`${globalIndex+1}. ${display} — ${year}`);
     const token = Object.keys(idx.tokens || {}).find(t => idx.tokens[t] === fname) || '';
     const filesCount = (batch.files || []).length;
     const countBtn = { text: `${filesCount} files`, callback_data: `index_view_${token}_${p}` };
@@ -534,6 +656,8 @@ bot.on('message', async (msg) => {
       delete pendingAddTo[chatId];
       const batch = readBatchFile(pending.filename);
       if (!batch) return safeSendMessage(chatId, 'Batch not found after add.');
+      // schedule metadata fetch
+      setImmediate(() => backgroundFetchMetadataForMissing().catch(()=>{}));
       return safeSendMessage(chatId, `Added ${pending.files.length} items to ${batch.display_name || batch.filename}.`);
     }
 
@@ -556,6 +680,8 @@ bot.on('message', async (msg) => {
       kb.inline_keyboard.push([{ text: 'Contact Admin', url: 'https://t.me/aswinlalus' }]);
       const previewText = batch.display_name ? `Saved ${batch.filename}\n${batch.display_name}` : `Saved ${batch.filename}`;
       await safeSendMessage(chatId, `${previewText}\nPreview link available.`, { reply_markup: kb });
+      // schedule background metadata fetch
+      setImmediate(() => backgroundFetchMetadataForMissing().catch(()=>{}));
       return;
     }
 
@@ -598,6 +724,8 @@ bot.on('message', async (msg) => {
       const preview = formatCaptionHtmlForPreview(text);
       await safeSendMessage(chatId, 'Caption updated. Preview (first lines):');
       await safeSendMessage(chatId, preview, { parse_mode: 'HTML' });
+      // schedule metadata refresh (maybe changed)
+      setImmediate(() => backgroundFetchMetadataForMissing().catch(()=>{}));
       return;
     }
 
@@ -621,19 +749,25 @@ bot.on('message', async (msg) => {
       const filename = idx.tokens[token];
       if (!filename) return safeSendMessage(chatId, 'Token not found');
       const filePath = filenameToPath(filename);
-      try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); delete idx.tokens[token]; idx.order = idx.order.filter(f=>f!==filename); writeIndex(idx); return safeSendMessage(chatId, `Deleted ${filename} (token ${token})`); } catch(e){ console.error(e); return safeSendMessage(chatId, 'Delete failed: '+(e && e.message)); }
+      try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); delete idx.tokens[token]; idx.order = idx.order.filter(f=>f!==filename); writeIndex(idx); const meta = readMeta(); if (meta.batch_meta) { delete meta.batch_meta[filename]; writeMeta(meta); } return safeSendMessage(chatId, `Deleted ${filename} (token ${token})`); } catch(e){ console.error(e); return safeSendMessage(chatId, 'Delete failed: '+(e && e.message)); }
     }
 
-    // index page size (we keep static page size now)
+    // index page size
     if (text && text.startsWith('/set_index_page_size')) {
       if (ADMIN_ID && fromId !== ADMIN_ID) return safeSendMessage(chatId, 'Only admin may set this.');
-      return safeSendMessage(chatId, 'Index page size setting removed (feature disabled).');
+      const parts = text.split(/\s+/);
+      if (parts.length < 2) return safeSendMessage(chatId, 'Usage: /set_index_page_size <n>');
+      const n = Number(parts[1]);
+      if (!n || n < 1 || n > 50) return safeSendMessage(chatId, 'n must be a number between 1 and 50');
+      const meta = readMeta(); meta.index_page_size = n; writeMeta(meta);
+      return safeSendMessage(chatId, `Index page size set to ${n}.`);
     }
 
-    // /refresh_metadata removed
+    // refresh metadata
     if (text && text.startsWith('/refresh_metadata')) {
-      if (ADMIN_ID && fromId !== ADMIN_ID) return safeSendMessage(chatId, 'Only admin may use that.');
-      return safeSendMessage(chatId, 'Metadata feature removed.');
+      if (ADMIN_ID && fromId !== ADMIN_ID) return safeSendMessage(chatId, 'Only admin may refresh metadata.');
+      setImmediate(() => backgroundFetchMetadataForMissing().catch(()=>{}));
+      return safeSendMessage(chatId, 'Metadata refresh queued (running in background).');
     }
 
     // /start (no token) - present Browse + inline placeholder
@@ -695,8 +829,7 @@ bot.on('message', async (msg) => {
         } else baseMsg = await bot.sendMessage(chatId, captionHtml || filename, captionHtml?{parse_mode:'HTML'}:{});
       } catch (e) { console.warn('browse send failed', e); baseMsg = await bot.sendMessage(chatId, captionHtml || filename, captionHtml?{parse_mode:'HTML'}:{}); }
       browseSessions[chatId] = { pos: lastIndex, order: order, messageId: baseMsg.message_id };
-      // pass isAdmin flag so keyboard shows user/admin options correctly
-      const kb = makeBrowseKeyboardForIndex(lastIndex, order.length, batch.token, (from && from.id === ADMIN_ID));
+      const kb = makeBrowseKeyboardForIndex(lastIndex, order.length, batch.token);
       try { await bot.editMessageReplyMarkup({ inline_keyboard: kb.inline_keyboard }, { chat_id: chatId, message_id: baseMsg.message_id }); } catch (e) { try { await bot.sendMessage(chatId, 'Browse controls:', { reply_markup: kb }); } catch(_){} }
       return;
     }
@@ -761,6 +894,7 @@ bot.on('message', async (msg) => {
           const appended = await addFileToExistingBatch(chatId, pending.token, fileMeta);
           pending.files.push(fileMeta);
           await safeSendMessage(chatId, `Appended item to batch "${appended.display_name || appended.filename}" (now total ${appended.files.length}).`);
+          setImmediate(() => backgroundFetchMetadataForMissing().catch(()=>{}));
         } catch (e) {
           console.warn('append failed', e && e.message);
           await safeSendMessage(chatId, 'Failed to append item.');
@@ -800,6 +934,7 @@ bot.on('message', async (msg) => {
         const updatedBatch = await addFileToPending(chatId, fileMeta);
         const count = updatedBatch && updatedBatch.files ? updatedBatch.files.length : '?';
         await safeSendMessage(chatId, `Added item to batch "${updatedBatch.display_name || updatedBatch.filename}" (total items: ${count}).`);
+        setImmediate(() => backgroundFetchMetadataForMissing().catch(()=>{}));
       } catch (e) {
         console.warn('Failed to add file to pending', e && e.message);
         await safeSendMessage(chatId, 'Failed to add file to batch.');
@@ -894,16 +1029,22 @@ bot.on('callback_query', async (q) => {
 • /edit_caption <TOKEN> — edit a specific file caption
 • /listfiles — list batches and tokens
 • /deletefile <TOKEN> — delete a batch
-• /listusers and /getuser <id> — user tracking`;
+• /set_index_page_size <n> — set items per index page
+• /refresh_metadata — re-fetch metadata (background)
+• /listusers and /getuser <id> — user tracking
+Notes:
+• Metadata is fetched from Wikipedia in the background and stored; it may take some minutes to appear in the index.
+• Reordering batches is possible when viewing the index (admin only). Reordering files inside a batch is available in the 'View files' list (admin).`;
         await safeSendMessage(chatId, helpText);
         return;
       }
     }
 
-    // index & browse callbacks (including new view_index_user/admin handlers)
-    if (data === 'view_index' || data.startsWith('index_') || data.startsWith('browse_') || data.startsWith('file_') || data.startsWith('browse_file_') || data === 'view_index_user' || data === 'view_index_admin' || data.startsWith('view_index_user_page_') || data === 'close_index_view') {
+    // index & browse callbacks
+    if (data === 'view_index' || data.startsWith('index_') || data.startsWith('browse_') || data.startsWith('file_') || data.startsWith('browse_file_')) {
       await safeAnswerCallbackQuery(q.id);
 
+      // view index
       if (data === 'view_index') {
         const idxPayload = buildIndexTextAndKeyboardQuick(0, (q.from && q.from.id === ADMIN_ID));
         try { await bot.sendMessage(chatId, idxPayload.text, { parse_mode:'HTML', reply_markup: idxPayload.keyboard }); }
@@ -911,75 +1052,7 @@ bot.on('callback_query', async (q) => {
         return;
       }
 
-      // handle user index view + pagination
-      if (data === 'view_index_user' || data.startsWith('view_index_user_page_') || data === 'close_index_view') {
-        await safeAnswerCallbackQuery(q.id);
-
-        // Close: clear inline keyboard on the message
-        if (data === 'close_index_view') {
-          try {
-            if (q.message && q.message.chat && q.message.message_id) {
-              await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: q.message.chat.id, message_id: q.message.message_id });
-            }
-          } catch (e) {
-            // ignore errors
-          }
-          return;
-        }
-
-        // Determine page
-        let page = 0;
-        if (data.startsWith('view_index_user_page_')) {
-          const parts = data.split('_');
-          const last = parts[parts.length - 1];
-          page = Number(last) || 0;
-        } else {
-          page = 0; // default when user first presses view_index_user
-        }
-
-        const pageSize = 15; // tweak if you want more/less items per page
-        const payload = buildUserIndexPage(page, pageSize);
-
-        // Try to edit the existing message where the callback came from
-        try {
-          if (q.message && q.message.chat && q.message.message_id) {
-            await bot.editMessageText(payload.text, {
-              chat_id: q.message.chat.id,
-              message_id: q.message.message_id,
-              parse_mode: 'HTML',
-              disable_web_page_preview: true,
-              reply_markup: payload.keyboard
-            });
-            return;
-          }
-        } catch (e) {
-          // if edit fails, fall back to sending a new message
-        }
-
-        // Fallback: send a fresh message
-        try {
-          await safeSendMessage(chatId, payload.text, {
-            parse_mode: 'HTML',
-            disable_web_page_preview: true,
-            reply_markup: payload.keyboard
-          });
-        } catch (e) {
-          await safeSendMessage(chatId, 'Unable to show index right now.');
-        }
-
-        return;
-      }
-
-      // New: view_index_admin -> send original admin index view with inline management keyboard
-      if (data === 'view_index_admin') {
-        if (q.from && q.from.id !== ADMIN_ID) return safeAnswerCallbackQuery(q.id, { text: 'Admin only' });
-        const idxPayload = buildIndexTextAndKeyboardQuick(0, true);
-        try { await bot.sendMessage(chatId, idxPayload.text, { parse_mode:'HTML', reply_markup: idxPayload.keyboard }); }
-        catch (e) { await safeSendMessage(chatId, idxPayload.text, { parse_mode:'HTML', reply_markup: idxPayload.keyboard }); }
-        return;
-      }
-
-      // index pagination handlers (admin index)
+      // index pagination handlers
       if (data.startsWith('index_prev_') || data.startsWith('index_next_') || data.startsWith('index_page_') || data.startsWith('index_refresh_')) {
         const parts = data.split('_');
         const page = Number(parts[2]) || 0;
@@ -989,7 +1062,7 @@ bot.on('callback_query', async (q) => {
         return;
       }
 
-      // index actions with token (admin)
+      // index actions with token
       if (data.startsWith('index_view_') || data.startsWith('index_up_') || data.startsWith('index_down_')) {
         const parts = data.split('_');
         const action = parts[1];
@@ -1049,17 +1122,150 @@ bot.on('callback_query', async (q) => {
           else baseMsg = await bot.sendMessage(chatId, captionHtml || filename, captionHtml ? { parse_mode: 'HTML' } : {});
         } catch (e) { baseMsg = await bot.sendMessage(chatId, captionHtml || filename, captionHtml ? { parse_mode: 'HTML' } : {}); }
         browseSessions[chatId] = { pos, order, messageId: baseMsg.message_id };
-        const kb = makeBrowseKeyboardForIndex(pos, order.length, batch.token, (q.from && q.from.id === ADMIN_ID));
-        try { await bot.editMessageReplyMarkup({ inline_keyboard: kb.inline_keyboard }, { chat_id: chatId, message_id: baseMsg.message_id }); } catch (e) { try { await bot.sendMessage(chatId, 'Browse controls:', { reply_markup: kb }); } catch(_){} }
+        const kb = makeBrowseKeyboardForIndex(pos, order.length, batch.token);
+        try { await bot.editMessageReplyMarkup({ inline_keyboard: kb.inline_keyboard }, { chat_id: chatId, message_id: baseMsg.message_id }); } catch (e) { try { await bot.sendMessage(chatId, 'Browse controls:', { reply_markup: kb }); } catch (_) {} }
         return;
       }
 
-      // other browse/file callbacks will be handled by the remainder of your callback handling below
+      // session checks
+      const session = browseSessions[chatId];
+      if (!session) return safeSendMessage(chatId, 'No active browse session. Use /browse.');
+
+      const order = session.order || []; let pos = session.pos || 0;
+
+      if (data === 'browse_left') {
+        // left shows previous upload -> older -> increase pos
+        pos = Math.min(order.length - 1, pos + 1); session.pos = pos;
+        const fname = order[pos]; const batch = readBatchFile(fname); if (!batch || !batch.files || batch.files.length === 0) return safeSendMessage(chatId, 'Batch empty.');
+        const fileObj = batch.files[0]; const captionHtml = fileObj.caption ? formatCaptionHtmlForPreview(fileObj.caption) : '';
+        const res = await replaceBrowseMessage(chatId, session.messageId, fileObj, captionHtml);
+        if (res && res.newMessage) session.messageId = res.newMessage.message_id;
+        const kb = makeBrowseKeyboardForIndex(pos, order.length, batch.token);
+        try { await bot.editMessageReplyMarkup({ inline_keyboard: kb.inline_keyboard }, { chat_id: chatId, message_id: session.messageId }); } catch (_) {}
+        return;
+      }
+
+      if (data === 'browse_right') {
+        pos = Math.max(0, pos - 1); session.pos = pos;
+        const fname = order[pos]; const batch = readBatchFile(fname); if (!batch || !batch.files || batch.files.length === 0) return safeSendMessage(chatId, 'Batch empty.');
+        const fileObj = batch.files[0]; const captionHtml = fileObj.caption ? formatCaptionHtmlForPreview(fileObj.caption) : '';
+        const res = await replaceBrowseMessage(chatId, session.messageId, fileObj, captionHtml);
+        if (res && res.newMessage) session.messageId = res.newMessage.message_id;
+        const kb = makeBrowseKeyboardForIndex(pos, order.length, batch.token);
+        try { await bot.editMessageReplyMarkup({ inline_keyboard: kb.inline_keyboard }, { chat_id: chatId, message_id: session.messageId }); } catch (_) {}
+        return;
+      }
+
+      if (data === 'browse_random') {
+        if (!order || order.length === 0) return safeSendMessage(chatId, 'No batches.');
+        const r = Math.floor(Math.random() * order.length); session.pos = r;
+        const batch = readBatchFile(order[r]); if (!batch || !batch.files || batch.files.length === 0) return safeSendMessage(chatId, 'Random batch empty.');
+        const fileObj = batch.files[0]; const captionHtml = fileObj.caption ? formatCaptionHtmlForPreview(fileObj.caption) : '';
+        const res = await replaceBrowseMessage(chatId, session.messageId, fileObj, captionHtml);
+        if (res && res.newMessage) session.messageId = res.newMessage.message_id;
+        const kb = makeBrowseKeyboardForIndex(r, order.length, batch.token); try { await bot.editMessageReplyMarkup({ inline_keyboard: kb.inline_keyboard }, { chat_id: chatId, message_id: session.messageId }); } catch (_) {}
+        return;
+      }
+
+      if (data === 'browse_view') {
+        const fname = order[session.pos]; const batch = readBatchFile(fname); if (!batch) return safeSendMessage(chatId, 'Batch missing.');
+        const token = Object.keys(readIndex().tokens || {}).find(t => readIndex().tokens[t] === fname);
+        const asAdmin = (q.from && q.from.id === ADMIN_ID);
+        const filesKb = buildFilesKeyboardForBatch(token, batch, asAdmin);
+        try { await bot.editMessageReplyMarkup({ inline_keyboard: filesKb.inline_keyboard }, { chat_id: chatId, message_id: session.messageId }); } catch (e) { await safeSendMessage(chatId, 'Files:', { reply_markup: filesKb }); }
+        return;
+      }
+
+      if (data === 'browse_list') {
+        const fname = order[session.pos]; const batch = readBatchFile(fname); if (!batch) return safeSendMessage(chatId, 'Batch missing.');
+        const token = Object.keys(readIndex().tokens || {}).find(t => readIndex().tokens[t] === fname);
+        const asAdmin = (q.from && q.from.id === ADMIN_ID);
+        const listView = buildListViewForBatch(token, batch, asAdmin);
+        try { await bot.editMessageText(listView.text, { chat_id: chatId, message_id: session.messageId, parse_mode: 'HTML', reply_markup: listView.keyboard.inline_keyboard }); } catch (e) { await safeSendMessage(chatId, listView.text, { parse_mode: 'HTML', reply_markup: listView.keyboard }); }
+        return;
+      }
+
+      if (data === 'browse_back_to_preview') {
+        const s = browseSessions[chatId]; if (!s) return safeSendMessage(chatId, 'No active browse session.');
+        const fname = s.order[s.pos]; const batch = readBatchFile(fname); if (!batch) return safeSendMessage(chatId, 'Batch missing.');
+        const firstFile = batch.files[0]; const captionHtml = firstFile.caption ? formatCaptionHtmlForPreview(firstFile.caption) : '';
+        try { const res = await replaceBrowseMessage(chatId, s.messageId, firstFile, captionHtml); if (res && res.newMessage) s.messageId = res.newMessage.message_id; const kb = makeBrowseKeyboardForIndex(s.pos, s.order.length, batch.token); try { await bot.editMessageReplyMarkup({ inline_keyboard: kb.inline_keyboard }, { chat_id: chatId, message_id: s.messageId }); } catch (_) {} } catch (e) { const kb = makeBrowseKeyboardForIndex(s.pos, s.order.length, batch.token); try { await bot.editMessageReplyMarkup({ inline_keyboard: kb.inline_keyboard }, { chat_id: chatId, message_id: s.messageId }); } catch (_) { try { await bot.sendMessage(chatId, 'Browse controls:', { reply_markup: kb }); } catch (_) {} } }
+        return;
+      }
+
+      // show a specific file from files list
+      if (data.startsWith('browse_file_')) {
+        const parts = data.split('_'); const token = parts[2]; const indexStr = parts[3]; const fileIdx = Number(indexStr);
+        if (isNaN(fileIdx)) return safeSendMessage(chatId, 'Invalid file index');
+        const idxObj = readIndex(); const fname = idxObj.tokens[token]; if (!fname) return safeSendMessage(chatId, 'Batch not found for that token');
+        const batch = readBatchFile(fname); if (!batch) return safeSendMessage(chatId, 'Batch missing');
+        const fileObj = batch.files[fileIdx]; if (!fileObj) return safeSendMessage(chatId, 'File not found in batch');
+        const captionHtml = fileObj.caption ? formatCaptionHtmlForPreview(fileObj.caption) : '';
+        const res = await replaceBrowseMessage(chatId, session.messageId, fileObj, captionHtml);
+        if (res && res.newMessage) session.messageId = res.newMessage.message_id;
+        const kb = makeBrowseKeyboardForIndex(session.pos, session.order.length, token); try { await bot.editMessageReplyMarkup({ inline_keyboard: kb.inline_keyboard }, { chat_id: chatId, message_id: session.messageId }); } catch (_) {}
+        return;
+      }
+
+      // close files view
+      if (data === 'browse_files_close') {
+        const s = browseSessions[chatId]; if (!s) return safeSendMessage(chatId, 'No active browse session.');
+        const fname = s.order[s.pos]; const batch = readBatchFile(fname); if (!batch) return safeSendMessage(chatId, 'Batch missing');
+        const kb = makeBrowseKeyboardForIndex(s.pos, s.order.length, batch.token); try { await bot.editMessageReplyMarkup({ inline_keyboard: kb.inline_keyboard }, { chat_id: chatId, message_id: s.messageId }); } catch (_) {}
+        return;
+      }
+
+      // file-level admin actions: file_up_, file_down_, file_edit_
+      if (data.startsWith('file_up_') || data.startsWith('file_down_') || data.startsWith('file_edit_')) {
+        const parts = data.split('_');
+        const action = parts[1];
+        const token = parts[2];
+        const idxNum = Number(parts[3]);
+        if ((action === 'up' || action === 'down') && q.from && q.from.id !== ADMIN_ID) return safeAnswerCallbackQuery(q.id, { text: 'Admin only' });
+        const idxObj = readIndex();
+        const filename = idxObj.tokens[token];
+        if (!filename) return safeSendMessage(chatId, 'Batch not found');
+        const batch = readBatchFile(filename);
+        if (!batch) return safeSendMessage(chatId, 'Batch missing');
+        if (isNaN(idxNum) || idxNum < 0 || idxNum >= (batch.files||[]).length) return safeSendMessage(chatId, 'Invalid file index');
+        if (action === 'up') {
+          if (idxNum <= 0) return safeAnswerCallbackQuery(q.id, { text: 'Already at top' });
+          [batch.files[idxNum-1], batch.files[idxNum]] = [batch.files[idxNum], batch.files[idxNum-1]];
+          writeBatchFile(filename, batch);
+          await safeAnswerCallbackQuery(q.id, { text: 'Moved up' });
+        } else if (action === 'down') {
+          if (idxNum >= batch.files.length - 1) return safeAnswerCallbackQuery(q.id, { text: 'Already at bottom' });
+          [batch.files[idxNum+1], batch.files[idxNum]] = [batch.files[idxNum], batch.files[idxNum+1]];
+          writeBatchFile(filename, batch);
+          await safeAnswerCallbackQuery(q.id, { text: 'Moved down' });
+        } else if (action === 'edit') {
+          if (q.from && q.from.id !== ADMIN_ID) return safeAnswerCallbackQuery(q.id, { text: 'Admin only' });
+          pendingBatches[chatId] = pendingBatches[chatId] || {};
+          pendingBatches[chatId].editCaptionFlow = { token, filename: filename, stage: 'await_caption', fileIndex: idxNum };
+          return safeSendMessage(chatId, `Send a new caption for file #${idxNum+1} in that batch.`);
+        }
+        // re-render the list view if message belongs to the bot
+        try {
+          const asAdmin = true;
+          const listView = buildListViewForBatch(token, batch, asAdmin);
+          await bot.editMessageText(listView.text, { chat_id: q.message.chat.id, message_id: q.message.message_id, parse_mode: 'HTML', reply_markup: listView.keyboard.inline_keyboard });
+        } catch (e) { /* ignore */ }
+        return;
+      }
+
+      return;
     }
 
-    // rating and the rest of callbacks follow — ensure these are implemented in your original code.
-    // If no handlers matched:
-    await safeAnswerCallbackQuery(q.id, { text: 'Action handled.' });
+    // rating
+    if (data && data.startsWith('rate_')) {
+      const parts = data.split('_'); const token = parts[1]; const score = Number(parts[2] || 0);
+      const idx = readIndex(); const filename = idx.tokens[token]; if (!filename) return safeAnswerCallbackQuery(q.id, { text: 'Batch not found' });
+      const batch = readBatchFile(filename); if (!batch) return safeAnswerCallbackQuery(q.id, { text: 'Batch missing' });
+      batch.ratings = batch.ratings || {}; batch.ratings[q.from.id] = { score, ts: new Date().toISOString() }; writeBatchFile(filename, batch);
+      return safeAnswerCallbackQuery(q.id, { text: `Thanks — you rated ${score}⭐` });
+    }
+
+    return safeAnswerCallbackQuery(q.id, { text: 'Unknown action' });
 
   } catch (e) {
     console.error('callback_query handler error', e && (e.stack || e.message));
@@ -1067,6 +1273,12 @@ bot.on('callback_query', async (q) => {
   }
 });
 
-// ---------- Final notes ----------
-console.log('Bot ready. Commands: /help, /sendfile, /doneadd, /addto <TOKEN>, /doneaddto, /edit_caption <TOKEN>, /listfiles, /deletefile <TOKEN>, /listusers, /getuser <id>, /start_<TOKEN>, /browse, /view_index');
-console.log('Metadata feature removed; bot runs without external metadata fetching.');
+// ---------- fuzzy helpers ----------
+function levenshtein(a,b){ if(!a) return b?b.length:0; if(!b) return a.length; a=a.toLowerCase(); b=b.toLowerCase(); const m=a.length, n=b.length; const dp=Array.from({length:m+1},()=>new Array(n+1).fill(0)); for(let i=0;i<=m;i++) dp[i][0]=i; for(let j=0;j<=n;j++) dp[0][j]=j; for(let i=1;i<=m;i++) for(let j=1;j<=n;j++){ const cost = a[i-1]===b[j-1]?0:1; dp[i][j]=Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost); } return dp[m][n]; }
+function similarity(a,b){ const maxLen=Math.max((a||'').length,(b||'').length,1); const dist=levenshtein(a||'', b||''); return 1-(dist/maxLen); }
+
+// ---------- misc ----------
+function exportBatchCsv(filename) { const batch = readBatchFile(filename); if (!batch) return null; const rows=['index,file_name,type,file_id']; batch.files.forEach((f,i)=>{ rows.push(`${i+1},"${(f.file_name||f.text||'').replace(/"/g,'""')}",${f.type},${f.file_id||''}`); }); return rows.join('\n'); }
+
+console.log('Bot ready. Commands: /help, /sendfile, /doneadd, /addto <TOKEN>, /doneaddto, /edit_caption <TOKEN>, /listfiles, /deletefile <TOKEN>, /set_index_page_size <n>, /refresh_metadata (admin), /listusers, /getuser <id>, /start_<TOKEN>, /browse, /view_index');
+console.log('Background metadata fetch (Wikipedia) enabled; metadata loads in background and is cached in ./data/meta.json');

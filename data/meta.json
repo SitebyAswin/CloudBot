@@ -1,29 +1,4 @@
 {
-  "release_cache": {
-    "Kingdom [2025]": null,
-    "F1: The Movie [2025]": null,
-    "Maareesan [2025]": null,
-    "Honey Don't! [2025]": null,
-    "Weapons 2025": null,
-    "Su from So [2025]": null,
-    "Outlander: Blood of My Blood [2025]": null,
-    "Inspector Zende [2025]": null,
-    "Surrender [2025]": null,
-    "Aankhon ki Gustaakhiyan [2025]": null,
-    "Movie Saiyaara": null,
-    "Flask_ZPMNFN3IPBPL": null,
-    "Footage [2024]": null,
-    "Coolie_KZPJL68MAFH1": null,
-    "The Chronicles of the 4.5 Gang - Sambhava Vivaranam Nalarasa_J6QWQ02Z4UVD": null,
-    "Raveendra Nee Evide_INZYJ1YCRI4X": null,
-    "Koodal_EBQ7M9WKWC2Q": null,
-    "She Rides Shotgun_WEHYCTVLHGMI": null,
-    "Kolahalam_O09ZJA5R4UL3": null,
-    "Poyyamozhi_BLNX96IS26QE": null,
-    "Once Upon A Time There Was A Kallan_XR7BSFDD7B8Y": null,
-    "Paradha_ILVAJYO9LW6B": null,
-    "Meesha_AFPB4TPMTKGB": null
-  },
   "batch_meta": {
     "Kingdom [2025]": null,
     "F1: The Movie [2025]": null,
@@ -60,7 +35,6 @@
     "Eddington_1CLZ2A77BOWD": null,
     "Sitaare Zameen Par_55PENI3Z1Y8U": null,
     "Perumani_XK3QCOCAG4BV": null,
-    "batch_FZ1Q16MS1GXT": null,
     "Mission Impossible The Final Reckoning_ELCVNWY9N4G1": null,
     "Elio_7K9TWHDXLQKZ": null,
     "Night Always Comes_MHZCUNUWBCLA": null,
@@ -69,6 +43,11 @@
     "Pyaar Taan Hai Na_GD2EAZRHWHMY": null,
     "Yaadhum Ariyaan_K6ERZTAXBSQS": null,
     "Eth Nerathaanavo_B6VZUU3HNHUZ": null,
-    "Superman_XGWPWX0X0T7A": null
-  }
+    "Superman_XGWPWX0X0T7A": null,
+    "Movie J.S.K Janaki V vs State of Kerala_7C5JLHB574E5": null,
+    "Vyasanasametham Bandhumithradhikal_T9L7NHY49PP0": null,
+    "Red Letter_WKUC48H44UNM": null
+  },
+  "release_cache": {},
+  "index_page_size": 8
 }
