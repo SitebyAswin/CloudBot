@@ -26,6 +26,30 @@ module.exports = {
       "file_name": "NeZha.2.2025.1080p.WEB-DL.x265.6CH-Pahe.mkv",
       "mime_type": "video/x-matroska",
       "size": 2732950326
+    },
+    {
+      "caption": "Ne Zha 2019 480p BluRay x264 mkv",
+      "type": "document",
+      "file_id": "BQACAgQAAxkBAAIMmmjNSGVy9KBzpvl-yoTsz7L47WsIAALSBgACDjI5U2wm5JgynONLNgQ",
+      "file_name": "@WMR_Ne.Zha.2019.480p.BluRay.x264.mkv",
+      "mime_type": "video/x-matroska",
+      "size": 472759419
+    },
+    {
+      "caption": "Ne Zha 2019 720p BluRay x265 Hevc mkv",
+      "type": "document",
+      "file_id": "BQACAgQAAxkBAAIMm2jNSGXQMyguR31hBSfuMgABY_1eygAC0AYAAg4yOVPO5s7YPNOMCjYE",
+      "file_name": "@WMR_Ne.Zha.2019.720p.BluRay.x265.Hevc.mkv",
+      "mime_type": "video/x-matroska",
+      "size": 704726995
+    },
+    {
+      "caption": "Ne Zha 2019 1080p BrRip x265 6CH HEVCBay com mkv",
+      "type": "document",
+      "file_id": "BQACAgUAAxkBAAIIUWjH9ECYhEn1pJvEFErkBDAN7eLYAAKYAAMwc0lXlGCzjbgqP0A2BA",
+      "file_name": "Ne.Zha.2019.1080p.BrRip.x265.6CH.HEVCBay.com.mkv",
+      "mime_type": "video/x-matroska",
+      "size": 1052495190
     }
   ],
   "display_name": "🎬 ​️Movie: Ne Zha II [2025]"

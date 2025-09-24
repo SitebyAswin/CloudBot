@@ -1,0 +1,28 @@
+{
+  "id": 803543058,
+  "first_name": "You",
+  "username": "aswinlalus",
+  "messages": 3,
+  "lastSeen": 1758203327539,
+  "last_name": "seeSnow",
+  "actions": [
+    {
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private",
+      "timestamp": "2025-09-18T14:25:56.329Z"
+    },
+    {
+      "type": "command",
+      "text": "/help",
+      "chat_type": "private",
+      "timestamp": "2025-09-18T14:25:59.739Z"
+    },
+    {
+      "type": "command",
+      "text": "/index",
+      "chat_type": "private",
+      "timestamp": "2025-09-18T14:33:24.291Z"
+    }
+  ]
+}

@@ -5,1203 +5,1203 @@ module.exports = {
   "last_name": "seeSnow",
   "actions": [
     {
-      "ts": "2025-09-13T15:55:18.743Z",
-      "type": "command",
-      "text": "/start BL8ODOWJQKGV",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:55:24.788Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:55:44.484Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:55:44.532Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:55:44.538Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:55:46.553Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:56:15.677Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:56:32.149Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:56:32.419Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:56:32.459Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:56:36.048Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:56:37.985Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:56:52.411Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:56:52.552Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:56:52.568Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:56:56.107Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:56:58.433Z",
-      "type": "command",
-      "text": "/start V3BHTZIM38LV",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:57:10.916Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:57:20.842Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:57:20.864Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:57:20.875Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:57:20.886Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:57:22.578Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:57:51.411Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:58:02.595Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:58:02.647Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:58:02.658Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:58:05.752Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:58:51.669Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:59:04.959Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:59:05.382Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:59:05.424Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:59:05.474Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:59:05.488Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:59:05.505Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:59:05.519Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:59:05.535Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:59:08.003Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T15:59:56.797Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:30.543Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:30.696Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:30.707Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:30.747Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:30.756Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:30.768Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:30.783Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:30.797Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:30.805Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:39.389Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:39.396Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:39.404Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:39.415Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:00:43.361Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:01:11.414Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:01:22.522Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:01:39.608Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:01:39.782Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:01:39.791Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:01:43.834Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:01:53.689Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:05.937Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:06.034Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:06.045Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:12.598Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:18.407Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:30.161Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:30.223Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:30.231Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:30.241Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:30.249Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:30.256Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:33.255Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:38.103Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:39.667Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:49.932Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:50.051Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:50.060Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:50.065Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:50.072Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-13T16:02:52.922Z",
-      "type": "command",
-      "text": "/doneadd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T05:52:53.336Z",
+      "ts": "2025-09-19T10:49:44.947Z",
       "type": "command",
       "text": "/start",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T05:53:26.129Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T06:01:06.437Z",
+      "ts": "2025-09-19T10:50:36.128Z",
       "type": "command",
       "text": "/start",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T06:01:09.823Z",
+      "ts": "2025-09-19T10:50:58.636Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T10:51:35.144Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T10:52:13.464Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T10:52:47.098Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T10:53:22.891Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T10:54:24.405Z",
       "type": "command",
       "text": "/help",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T06:03:12.718Z",
+      "ts": "2025-09-19T10:54:48.660Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T10:56:41.234Z",
+      "type": "command",
+      "text": "/start PB4K8OS5M5ZZ",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:04:06.958Z",
+      "type": "command",
+      "text": "/help",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:04:10.672Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:08:15.241Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:14:16.295Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:16:49.954Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:18:51.412Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:22:59.508Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:24:02.632Z",
+      "type": "command",
+      "text": "/help",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:24:12.333Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:24:34.980Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:24:37.069Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:24:40.567Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:25:58.006Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:25:58.222Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:25:58.254Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:25:58.275Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:25:58.302Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:25:58.319Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:25:58.333Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:26:12.261Z",
+      "type": "command",
+      "text": "/doneadd",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:28:24.500Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:43:37.977Z",
       "type": "command",
       "text": "/browse",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T06:05:21.450Z",
+      "ts": "2025-09-19T11:57:31.524Z",
       "type": "command",
-      "text": "/start",
+      "text": "/start XGWPWX0X0T7A",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T06:05:32.808Z",
-      "type": "command",
-      "text": "/start_P0QLM26CUZ7R",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T06:07:26.276Z",
-      "type": "command",
-      "text": "/watch_channel <@cloudofthem>",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T06:17:10.410Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T06:17:32.295Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T06:18:09.299Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T06:29:38.207Z",
-      "type": "command",
-      "text": "/listfiles",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T06:40:12.556Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T06:41:06.874Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T06:42:35.613Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T06:51:38.012Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T06:52:04.658Z",
+      "ts": "2025-09-19T11:58:09.744Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T06:52:04.785Z",
+      "ts": "2025-09-19T11:58:11.544Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T06:52:04.790Z",
+      "ts": "2025-09-19T11:58:11.569Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T06:52:09.433Z",
+      "ts": "2025-09-19T11:58:13.261Z",
       "type": "command",
       "text": "/doneadd",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T06:52:13.058Z",
-      "type": "command",
-      "text": "/sendfile",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T06:52:24.766Z",
+      "ts": "2025-09-19T11:58:29.911Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T06:52:24.820Z",
+      "ts": "2025-09-19T11:58:29.958Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T06:52:24.825Z",
+      "ts": "2025-09-19T11:58:29.964Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T06:53:00.534Z",
+      "ts": "2025-09-19T11:58:33.379Z",
       "type": "command",
       "text": "/doneadd",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T06:53:04.139Z",
-      "type": "command",
-      "text": "/sendfile",
+      "ts": "2025-09-19T11:59:11.917Z",
+      "type": "message",
+      "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T07:43:25.455Z",
-      "type": "command",
-      "text": "/help",
+      "ts": "2025-09-19T11:59:12.241Z",
+      "type": "message",
+      "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T07:43:34.188Z",
+      "ts": "2025-09-19T11:59:12.247Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T11:59:14.169Z",
+      "type": "command",
+      "text": "/doneadd",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:00:10.452Z",
       "type": "command",
       "text": "/listfiles",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T08:47:52.018Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T08:47:57.650Z",
-      "type": "command",
-      "text": "/listfiles",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T08:48:00.306Z",
+      "ts": "2025-09-19T12:00:23.377Z",
       "type": "command",
       "text": "/listusers",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T14:58:08.840Z",
+      "ts": "2025-09-19T12:00:38.159Z",
+      "type": "command",
+      "text": "/browse",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:01:20.356Z",
       "type": "command",
       "text": "/listfiles",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T14:58:39.459Z",
+      "ts": "2025-09-19T12:07:44.658Z",
       "type": "command",
-      "text": "/start AFPB4TPMTKGB",
+      "text": "/browse",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T14:59:18.434Z",
+      "ts": "2025-09-19T12:07:57.166Z",
       "type": "command",
-      "text": "/addto AFPB4TPMTKGB",
+      "text": "/listusers",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T14:59:29.821Z",
+      "ts": "2025-09-19T12:08:04.178Z",
+      "type": "command",
+      "text": "/listfiles",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:08:19.820Z",
+      "type": "command",
+      "text": "/listfiles",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:08:25.035Z",
+      "type": "command",
+      "text": "/listfiles 2",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:08:36.952Z",
+      "type": "command",
+      "text": "/listfiles 4",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:08:41.307Z",
+      "type": "command",
+      "text": "/listfiles 6",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:09:00.716Z",
+      "type": "command",
+      "text": "/listfiles 10",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:09:46.473Z",
+      "type": "message",
+      "text": "🎬 ​️Movie: Ne Zha II [2025]\nOpen: https://t.me/Testerforcloudbot?start=ILM7DVHJPJRG",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:10:20.411Z",
+      "type": "command",
+      "text": "/deletefile B144HMT5DJ7E",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:11:08.907Z",
+      "type": "command",
+      "text": "/addto ILM7DVHJPJRG",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:11:16.991Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T14:59:29.846Z",
+      "ts": "2025-09-19T12:11:17.116Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T14:59:29.859Z",
+      "ts": "2025-09-19T12:11:17.124Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T14:59:29.870Z",
-      "type": "message",
-      "text": "",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T14:59:35.833Z",
+      "ts": "2025-09-19T12:11:19.147Z",
       "type": "command",
       "text": "/doneaddto",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T14:59:49.452Z",
+      "ts": "2025-09-19T12:11:28.244Z",
       "type": "command",
-      "text": "/start_AFPB4TPMTKGB",
+      "text": "/start ILM7DVHJPJRG",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-14T15:00:22.032Z",
-      "type": "command",
-      "text": "/listfiles",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T15:18:37.368Z",
-      "type": "command",
-      "text": "/start 1CLZ2A77BOWD",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T15:18:42.716Z",
-      "type": "command",
-      "text": "/start MHZCUNUWBCLA",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T15:18:47.484Z",
-      "type": "command",
-      "text": "/start KZPJL68MAFH1",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-14T15:18:59.461Z",
-      "type": "command",
-      "text": "/listusers",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-15T02:02:01.347Z",
-      "type": "command",
-      "text": "/listfiles",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-15T02:02:05.066Z",
-      "type": "command",
-      "text": "/listusers",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-15T08:20:39.755Z",
-      "type": "command",
-      "text": "/listusers",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-15T12:11:31.357Z",
+      "ts": "2025-09-19T12:30:51.766Z",
       "type": "message",
       "text": "",
-      "chat_type": "supergroup"
+      "chat_type": "private"
     },
     {
-      "ts": "2025-09-15T12:12:09.142Z",
+      "ts": "2025-09-19T12:30:51.846Z",
       "type": "message",
       "text": "",
-      "chat_type": "supergroup"
-    },
-    {
-      "ts": "2025-09-15T16:11:32.012Z",
-      "type": "command",
-      "text": "/listfiles",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-15T16:11:36.626Z",
-      "type": "command",
-      "text": "/listusers",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-16T00:39:57.814Z",
-      "type": "command",
-      "text": "/listusers",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-16T08:12:29.460Z",
-      "type": "command",
-      "text": "/listusers",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-16T14:12:30.263Z",
-      "type": "command",
-      "text": "/listusers",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-16T14:12:43.721Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-16T14:14:28.760Z",
-      "type": "command",
-      "text": "/browse",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-16T14:15:02.024Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-16T14:15:23.753Z",
+      "ts": "2025-09-19T12:30:51.851Z",
       "type": "message",
-      "text": "🎬 ​️Movie: Nadikar [2024]\nOpen: https://t.me/Testerforcloudbot?start=651ABVFL4M1R",
+      "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-16T14:15:26.640Z",
-      "type": "command",
-      "text": "/start 651ABVFL4M1R",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:22:54.994Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:23:09.723Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:23:46.009Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:25:40.264Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:25:43.749Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:26:29.964Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:27:00.680Z",
-      "type": "command",
-      "text": "/s",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:27:06.450Z",
-      "type": "command",
-      "text": "/sd",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:27:16.210Z",
-      "type": "command",
-      "text": "/listfiles",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:35:21.223Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:35:23.954Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:37:24.182Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:37:57.723Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:39:13.342Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:40:01.402Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:44:07.730Z",
-      "type": "command",
-      "text": "/browse",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:49:33.907Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:50:11.036Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:58:43.641Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:58:58.793Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T07:59:37.595Z",
+      "ts": "2025-09-19T12:30:51.873Z",
       "type": "message",
-      "text": "start",
+      "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:01:41.935Z",
+      "ts": "2025-09-19T12:30:51.880Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:31:01.350Z",
       "type": "command",
-      "text": "/help",
+      "text": "/doneadd",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:01:43.732Z",
+      "ts": "2025-09-19T12:34:02.200Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:34:03.843Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:34:03.855Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:34:11.601Z",
       "type": "command",
-      "text": "/start",
+      "text": "/doneadd",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:03:29.143Z",
-      "type": "command",
-      "text": "/start",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:03:36.668Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:27:29.112Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:27:33.535Z",
-      "type": "command",
-      "text": "/listusers",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:30:11.227Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:30:15.450Z",
-      "type": "command",
-      "text": "/sf",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:30:18.645Z",
+      "ts": "2025-09-19T12:46:25.948Z",
       "type": "command",
       "text": "/sendfile",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:31:31.542Z",
-      "type": "command",
-      "text": "/sf",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:32:37.152Z",
+      "ts": "2025-09-19T12:47:09.674Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:32:38.777Z",
+      "ts": "2025-09-19T12:47:10.054Z",
+      "type": "message",
+      "text": "HINDI - 👇",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:47:10.061Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:32:38.795Z",
+      "ts": "2025-09-19T12:47:10.074Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:32:48.461Z",
+      "ts": "2025-09-19T12:47:10.080Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:47:10.087Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:47:10.092Z",
+      "type": "message",
+      "text": "TAMIL -👇",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:47:10.098Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:47:10.104Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:47:10.119Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:47:10.124Z",
+      "type": "message",
+      "text": "MALAYALAM -👇",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:47:10.130Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:47:10.136Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:47:10.142Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:47:10.149Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:47:17.814Z",
       "type": "command",
       "text": "/doneadd",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:33:31.980Z",
+      "ts": "2025-09-19T12:49:00.835Z",
+      "type": "command",
+      "text": "/start DGUL92UJL8LB",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:56.730Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:58.299Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:58.311Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:58.320Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:58.327Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:58.365Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:58.410Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:58.422Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:58.435Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:58.441Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:58.449Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:58.457Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:49:58.464Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:50:06.255Z",
       "type": "command",
       "text": "/doneadd",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:33:35.737Z",
+      "ts": "2025-09-19T12:54:52.759Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:54:52.773Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:54:52.780Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:54:52.785Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:54:52.791Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:54:52.796Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:54:52.803Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T12:54:59.823Z",
+      "type": "command",
+      "text": "/doneadd",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:02:14.509Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:02:14.590Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:02:14.599Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:02:18.506Z",
+      "type": "command",
+      "text": "/doneadd",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:06:04.395Z",
+      "type": "command",
+      "text": "/start IIRIRPDS1A1N",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:06:26.334Z",
+      "type": "command",
+      "text": "/start XHRX03KBHVHW",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:11:22.137Z",
+      "type": "command",
+      "text": "/help",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:11:40.792Z",
+      "type": "command",
+      "text": "/listfiles",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:11:57.572Z",
+      "type": "command",
+      "text": "/listfiles 8",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:57:13.259Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:57:13.322Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:57:13.336Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:57:25.529Z",
+      "type": "command",
+      "text": "/doneadd",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:57:27.948Z",
+      "type": "command",
+      "text": "/start MYGYFY0YPMBE",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:58:54.729Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:58:54.757Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:58:54.773Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:58:54.783Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:58:54.802Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:58:54.869Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:58:54.878Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:58:54.893Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:58:54.905Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:58:54.921Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:59:02.106Z",
+      "type": "command",
+      "text": "/doneadd",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:59:23.704Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:59:33.209Z",
+      "type": "message",
+      "text": "🎬 Movie: Samshayam [2025]\nOpen: https://t.me/Testerforcloudbot?start=J94PWGX80ULH",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T13:59:54.905Z",
+      "type": "command",
+      "text": "/deletefile UNJR5Z261FH8",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:01:06.728Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:01:06.760Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:01:06.772Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:01:06.784Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:01:06.794Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:01:06.806Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:01:06.815Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:01:12.402Z",
+      "type": "command",
+      "text": "/doneadd",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:01:22.233Z",
+      "type": "command",
+      "text": "/listfiles",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:01:30.625Z",
+      "type": "command",
+      "text": "/listfiles 9",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:04:41.042Z",
+      "type": "command",
+      "text": "/start UNJR5Z261FH8",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:05:13.095Z",
       "type": "command",
       "text": "/sendfile",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:33:42.411Z",
+      "ts": "2025-09-19T14:05:32.034Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:33:42.415Z",
+      "ts": "2025-09-19T14:05:32.077Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:33:42.516Z",
+      "ts": "2025-09-19T14:05:32.086Z",
       "type": "message",
       "text": "",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:33:47.476Z",
+      "ts": "2025-09-19T14:05:32.095Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:05:32.103Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:05:32.114Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:05:32.122Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:05:41.718Z",
       "type": "command",
       "text": "/doneadd",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:39:28.045Z",
+      "ts": "2025-09-19T14:05:46.886Z",
+      "type": "command",
+      "text": "/start UB0RHCLWYDBM",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:06:32.990Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:06:33.021Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:06:33.029Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-19T14:06:40.773Z",
+      "type": "command",
+      "text": "/doneadd",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-20T08:31:38.614Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-20T08:31:38.707Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-20T08:31:38.718Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-20T08:31:38.725Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-20T08:31:38.761Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-20T08:31:38.773Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-20T08:31:46.923Z",
+      "type": "command",
+      "text": "/doneadd",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-20T08:31:52.409Z",
+      "type": "command",
+      "text": "/start RHGBLPYJJZFF",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-20T08:34:55.688Z",
       "type": "command",
       "text": "/start",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T08:39:34.859Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:39:43.730Z",
-      "type": "command",
-      "text": "/listfiles",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:39:53.565Z",
-      "type": "command",
-      "text": "/browse",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:40:44.708Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:40:53.434Z",
-      "type": "command",
-      "text": "/listfiles",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:41:15.738Z",
-      "type": "command",
-      "text": "/deletefile DB6WO66AL86X /",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:41:30.956Z",
-      "type": "command",
-      "text": "/deletefile IHGAOM3EM1NB",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:41:42.170Z",
-      "type": "command",
-      "text": "/deletefile CD5AY1US0YOT",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:41:52.300Z",
-      "type": "command",
-      "text": "/deletefile COC6DI81VET0",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:42:01.014Z",
-      "type": "command",
-      "text": "/browse",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:43:14.710Z",
-      "type": "command",
-      "text": "/help",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:43:21.859Z",
-      "type": "command",
-      "text": "/browse",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T08:44:03.278Z",
-      "type": "command",
-      "text": "/browse",
-      "chat_type": "private"
-    },
-    {
-      "ts": "2025-09-17T09:12:38.256Z",
+      "ts": "2025-09-22T14:09:05.240Z",
       "type": "command",
       "text": "/start",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T09:15:56.564Z",
+      "ts": "2025-09-22T14:14:10.270Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T14:14:41.348Z",
+      "type": "command",
+      "text": "/addto DB6WO66AL86X",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T14:14:46.776Z",
+      "type": "message",
+      "text": "",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T14:14:56.612Z",
+      "type": "command",
+      "text": "/doneaddto",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T14:15:54.989Z",
+      "type": "command",
+      "text": "/doneaddto",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T14:22:16.636Z",
       "type": "command",
       "text": "/start",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T09:20:34.556Z",
+      "ts": "2025-09-22T14:22:37.305Z",
       "type": "command",
       "text": "/start",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T09:22:10.714Z",
+      "ts": "2025-09-22T14:28:17.657Z",
       "type": "command",
-      "text": "/help",
+      "text": "/start",
       "chat_type": "private"
     },
     {
-      "ts": "2025-09-17T09:22:18.244Z",
+      "ts": "2025-09-22T14:31:49.155Z",
       "type": "command",
-      "text": "/listusers",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T14:36:15.916Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T14:48:19.118Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T14:53:49.827Z",
+      "type": "command",
+      "text": "/start PB4K8OS5M5ZZ",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T14:55:23.401Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T15:08:47.849Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T15:09:09.226Z",
+      "type": "command",
+      "text": "/start MPROF8QVD18I",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T15:12:59.135Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T15:13:30.119Z",
+      "type": "command",
+      "text": "/start Z8PI0736Y6XF",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T15:13:59.783Z",
+      "type": "command",
+      "text": "/start DDWHB0WFV99N",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T15:16:16.637Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T15:16:23.383Z",
+      "type": "command",
+      "text": "/start PB4K8OS5M5ZZ",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T15:18:58.086Z",
+      "type": "command",
+      "text": "/start",
+      "chat_type": "private"
+    },
+    {
+      "ts": "2025-09-22T15:33:05.449Z",
+      "type": "command",
+      "text": "/start",
       "chat_type": "private"
     }
   ]

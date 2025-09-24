@@ -23,6 +23,7 @@ const INDEX_FILE = path.join(DATA_DIR, 'index.js');
 const META_FILE = path.join(DATA_DIR, 'meta.json');
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
+
 const ADMIN_ID = process.env.ADMIN_ID ? Number(process.env.ADMIN_ID) : NaN;
 
 if (!BOT_TOKEN) throw new Error('Please set BOT_TOKEN in .env');
@@ -323,9 +324,9 @@ async function sendBatchItemToChat(chatId, batch, f) {
 // ---------- browse helpers ----------
 const browseSessions = {};
 function makeBrowseKeyboardForIndex(pos, total, token) {
-  const left = { text: '◀️', callback_data: 'browse_left' };
-  const view = { text: '🔲 View files', callback_data: 'browse_view' };
-  const right = { text: '▶️', callback_data: 'browse_right' };
+  const left = { text: '◀️Prev', callback_data: 'browse_left' };
+  const view = { text: '🔲 Show files', callback_data: 'browse_view' };
+  const right = { text: 'Next▶️', callback_data: 'browse_right' };
   const random = { text: '🎲 Random', callback_data: 'browse_random' };
   const viewList = { text: '📃 View as list', callback_data: 'browse_list' };
   const viewIndex = { text: '🗂️ View index', callback_data: 'view_index' };
@@ -410,203 +411,142 @@ function recordUserAction(user, action) {
   } catch (e) { console.warn('recordUserAction failed', e && e.message); }
 }
 
-// ---------- Wikipedia metadata fetcher (background) ----------
-function httpGetJson(url) {
-  return new Promise((resolve, reject) => {
-    try {
-      const u = new URL(url);
-      const req = https.get(u, (res) => {
-        let body = '';
-        res.setEncoding('utf8');
-        res.on('data', (d) => body += d);
-        res.on('end', () => {
-          try { const j = JSON.parse(body); resolve(j); } catch (e) { resolve(null); }
-        });
-      });
-      req.on('error', (err) => reject(err));
-      req.on('timeout', () => { req.destroy(); resolve(null); });
-    } catch (e) { resolve(null); }
-  });
-}
-function httpGet(url) {
-  return new Promise((resolve, reject) => {
-    try {
-      const u = new URL(url);
-      const req = https.get(u, (res) => {
-        let body = '';
-        res.setEncoding('utf8');
-        res.on('data', (d) => body += d);
-        res.on('end', () => resolve(body));
-      });
-      req.on('error', (err) => reject(err));
-      req.on('timeout', () => { req.destroy(); resolve(null); });
-    } catch (e) { resolve(null); }
-  });
-}
-
-async function wikiSearchTopPage(title) {
-  try {
-    const q = encodeURIComponent(title);
-    const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${q}&format=json&utf8=1&srlimit=5`;
-    const res = await httpGetJson(url);
-    if (res && res.query && res.query.search && res.query.search.length > 0) {
-      return res.query.search[0];
-    }
-  } catch (e) { /* ignore */ }
-  return null;
-}
-async function wikiGetPageHtmlById(pageid) {
-  try {
-    const url = `https://en.wikipedia.org/w/api.php?action=parse&pageid=${pageid}&prop=text&format=json`;
-    const res = await httpGetJson(url);
-    if (res && res.parse && res.parse.text && res.parse.text['*']) return res.parse.text['*'];
-  } catch (e) { /* ignore */ }
-  return null;
-}
-function extractFromInfoboxHtml(html, fieldNames) {
-  try {
-    const rxTh = /<th[^>]*>(.*?)<\/th>\s*<td[^>]*>(.*?)<\/td>/gi;
-    let m;
-    while ((m = rxTh.exec(html))) {
-      const th = m[1].replace(/<[^>]+>/g,'').trim();
-      const td = m[2].replace(/<[^>]+>/g,'').trim();
-      for (const fn of fieldNames) {
-        if (th.toLowerCase().includes(fn.toLowerCase())) return td;
-      }
-    }
-  } catch (e) { /* ignore */ }
-  return null;
-}
-function stripTags(s) { return s ? s.replace(/<[^>]+>/g, '').replace(/\s+/g,' ').trim() : s; }
-
-async function queryWikiDetailsForTitle(title) {
-  try {
-    const top = await wikiSearchTopPage(title);
-    if (!top) return null;
-    const pageId = top.pageid;
-    const html = await wikiGetPageHtmlById(pageId);
-    if (!html) return null;
-    const introMatch = html.match(/<p>(.*?)<\/p>/i);
-    const intro = introMatch ? stripTags(introMatch[1]) : '';
-    const director = extractFromInfoboxHtml(html, ['Directed by','Director','Directed']);
-    const writer = extractFromInfoboxHtml(html, ['Written by','Writer','Screenplay by','Story by']);
-    const starring = extractFromInfoboxHtml(html, ['Starring','Cast','Cast and characters']);
-    let release = extractFromInfoboxHtml(html, ['Release date','Release','Released']);
-    if (release) release = release.replace(/\s*\(.*?\)/g,'').replace(/\s+/g,' ').trim();
-    const runtime = extractFromInfoboxHtml(html, ['Running time','Runtime','Duration']);
-    const language = extractFromInfoboxHtml(html, ['Language','Languages']);
-    const country = extractFromInfoboxHtml(html, ['Country']);
-    const genre = extractFromInfoboxHtml(html, ['Genre','Genres','Category']);
-    const yearMatch = (top.snippet || '').match(/\b(19|20)\d{2}\b/) || (intro && intro.match(/\b(19|20)\d{2}\b/));
-    const year = yearMatch ? Number((yearMatch[0] || '').match(/\d{4}/)[0]) : null;
-
-    const displayTitle = top.title || title;
-    const languagesList = language ? language.split(/[,;\/]/).map(s=>s.trim()).filter(Boolean) : [];
-    const genresList = genre ? genre.split(/[,;\/]/).map(s=>s.trim()).filter(Boolean) : [];
-    const actorsList = starring ? starring.split(/[,;\/\n]/).map(s=>s.trim()).filter(Boolean) : [];
-
-    let out = '';
-    out += `🎪Tɪᴛʟᴇ  : ${displayTitle}\n`;
-    if (runtime || languagesList.length || genresList.length) {
-      const parts = [];
-      if (runtime) parts.push(runtime);
-      if (languagesList.length) parts.push(languagesList.join(', '));
-      if (genresList.length) parts.push(genresList.join(' | '));
-      out += `⏱ Info : ${parts.join(' | ')}\n`;
-    }
-    if (genresList.length) out += `⚙ Gᴇɴʀᴇ  : ${genresList.join(' ')}\n`;
-    if (intro) out += `🗒 Sᴛᴏʀy Lɪɴᴇ  : ${intro}\n`;
-    if (release) out += `📀 Rᴇʟᴇᴀꜱᴇ Dᴀᴛᴇ : ${release}\n`;
-    if (director) out += `🎬 Dɪʀᴇᴄᴛᴏʀ : ${director}\n`;
-    if (writer) out += `🎞️ Wʀɪᴛᴇʀ : ${writer}\n`;
-    if (actorsList.length) out += `👯 Aᴄᴛᴏʀꜱ : ${actorsList.join(' ')}\n`;
-    return { formatted: out.trim(), year };
-  } catch (e) { console.warn('wiki query failed', e && e.message); return null; }
-}
-
-let backgroundQueueRunning = false;
-async function backgroundFetchMetadataForMissing() {
-  if (backgroundQueueRunning) return;
-  backgroundQueueRunning = true;
-  try {
-    const idx = readIndex();
-    const meta = readMeta();
-    meta.batch_meta = meta.batch_meta || {};
-    const toFetch = [];
-    for (const fname of (idx.order || [])) {
-      if (!meta.batch_meta[fname]) toFetch.push(fname);
-    }
-    for (const fname of toFetch) {
-      try {
-        const batch = readBatchFile(fname);
-        if (!batch) { meta.batch_meta[fname] = null; writeMeta(meta); continue; }
-        const titleCandidate = batch.display_name || batch.filename || '';
-        const res = await queryWikiDetailsForTitle(titleCandidate);
-        if (res && res.formatted) {
-          meta.batch_meta[fname] = res.formatted;
-          meta.release_cache = meta.release_cache || {};
-          meta.release_cache[fname] = res.year || null;
-          writeMeta(meta);
-          console.log('Fetched metadata for', fname);
-        } else {
-          meta.batch_meta[fname] = null;
-          writeMeta(meta);
-        }
-        await new Promise(r => setTimeout(r, 900));
-      } catch (e) {
-        console.warn('backgroundFetchMetadataForMissing item failed', e && e.message);
-      }
-    }
-  } catch (e) { console.warn('backgroundFetchMetadataForMissing failed', e && e.message); }
-  backgroundQueueRunning = false;
-}
-setImmediate(() => { backgroundFetchMetadataForMissing().catch(()=>{}); });
-setInterval(() => { backgroundFetchMetadataForMissing().catch(()=>{}); }, 1000 * 60 * 20);
-
 // ---------- index builder (quick, uses cached meta) ----------
-function buildIndexTextAndKeyboardQuick(page = 0, requesterIsAdmin = false) {
+// global in-memory lookup for callbacks (keeps callback_data short)
+const __callbackTokenMap = {}; // key -> { token, display, createdAt }
+
+// generate a short stable key
+function makeCbKey() {
+  return 'k' + Math.random().toString(36).slice(2, 9);
+}
+
+// cleanup old keys every 10 minutes (keys older than 30 min)
+setInterval(() => {
+  const cutoff = Date.now() - 30 * 60 * 1000;
+  for (const k of Object.keys(__callbackTokenMap)) {
+    if (!__callbackTokenMap[k] || __callbackTokenMap[k].createdAt < cutoff) delete __callbackTokenMap[k];
+  }
+}, 10 * 60 * 1000);
+
+// Escaper for MarkdownV2
+function escapeMarkdownV2(s = '') {
+  return String(s)
+    .replace(/\\/g, '\\\\')
+    .replace(/_/g, '\\_')
+    .replace(/\*/g, '\\*')
+    .replace(/\[/g, '\\[')
+    .replace(/\]/g, '\\]')
+    .replace(/\(/g, '\\(')
+    .replace(/\)/g, '\\)')
+    .replace(/~/g, '\\~')
+    .replace(/`/g, '\\`')
+    .replace(/>/g, '\\>')
+    .replace(/#/g, '\\#')
+    .replace(/\+/g, '\\+')
+    .replace(/-/g, '\\-')
+    .replace(/=/g, '\\=')
+    .replace(/\|/g, '\\|')
+    .replace(/\{/g, '\\{')
+    .replace(/\}/g, '\\}')
+    .replace(/\./g, '\\.')
+    .replace(/!/g, '\\!');
+}
+
+// View-only index builder (MarkdownV2) — bold text for everything except token (monospace)
+function buildIndexTextAndKeyboardQuick(page = 0, _requesterIsAdmin = false) {
   const idx = readIndex();
   const meta = readMeta();
   const order = Array.isArray(idx.order) ? idx.order.slice() : [];
-  const pageSize = (meta && meta.index_page_size) ? Number(meta.index_page_size) : 8;
+  const pageSize = (meta && (meta.index_page_size || meta.indexpagesize)) ? Number(meta.index_page_size || meta.indexpagesize) : 8;
+
   const total = order.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   let p = Number(page) || 0;
   if (p < 0) p = 0;
   if (p >= totalPages) p = totalPages - 1;
+
   const start = p * pageSize;
   const slice = order.slice(start, start + pageSize);
 
+  // name -> token (reverse lookup)
+  const rev = {};
+  for (const t of Object.keys(idx.tokens || {})) {
+    const val = idx.tokens[t];
+    if (val) rev[String(val)] = t;
+  }
+
   const lines = [];
-  const keyboardRows = [];
+  const itemKeyboardRows = [];
+
+  function shortLabel(s, max = 36) {
+    s = String(s || '').trim();
+    if (s.length <= max) return s;
+    return s.slice(0, max - 1) + '…';
+  }
+
   for (let i = 0; i < slice.length; i++) {
-    const globalIndex = start + i;
+    const n = start + i + 1;
     const fname = slice[i];
     const batch = readBatchFile(fname) || { filename: fname, display_name: fname, files: [] };
-    const display = batch.display_name || fname;
-    const year = (meta && meta.release_cache && Object.prototype.hasOwnProperty.call(meta.release_cache, fname) && meta.release_cache[fname]) ? String(meta.release_cache[fname]) : '----';
-    lines.push(`${globalIndex+1}. ${display} — ${year}`);
-    const token = Object.keys(idx.tokens || {}).find(t => idx.tokens[t] === fname) || '';
-    const filesCount = (batch.files || []).length;
-    const countBtn = { text: `${filesCount} files`, callback_data: `index_view_${token}_${p}` };
-    if (requesterIsAdmin) {
-      const upBtn = { text: '🔼', callback_data: `index_up_${token}_${p}` };
-      const downBtn = { text: '🔽', callback_data: `index_down_${token}_${p}` };
-      keyboardRows.push([countBtn, upBtn, downBtn]);
+    const displayRaw = batch.display_name || fname;
+
+    // sanitize display: remove bracket-like symbols and extra spaces
+    const cleanedDisplay = String(displayRaw).replace(/[\(\)\[\]\{\}\/\*]/g, '').replace(/\s+/g, ' ').trim();
+
+    const token =
+      rev[displayRaw] ||
+      Object.keys(idx.tokens || {}).find(t => idx.tokens[t] === fname) ||
+      '';
+
+    // Plain text line (no Markdown, no escaping)
+    lines.push(`${n}. ${cleanedDisplay}`);
+
+    if (token) {
+      // store a short key so callback_data stays tiny (ensure __callbackTokenMap exists)
+      const key = makeCbKey();
+      __callbackTokenMap[key] = { token: String(token), display: cleanedDisplay, createdAt: Date.now() };
+
+      const openLabel = shortLabel(cleanedDisplay, 28);
+      const encodedToken = encodeURIComponent(String(token));
+      const openUrl = (typeof BOT_USERNAME !== 'undefined' && BOT_USERNAME) ? `https://t.me/${BOT_USERNAME}?start=${encodedToken}` : `https://t.me/?start=${encodedToken}`;
+
+      // PREVIEW removed — keep only Open (URL) and Token (callback)
+      const copyCb = `copytoken|${key}`;
+
+      const row = [
+        { text: `🔗 ${openLabel}`, url: openUrl },
+        { text: `🔐 Token`, callback_data: copyCb }
+      ];
+      itemKeyboardRows.push(row);
     } else {
-      keyboardRows.push([countBtn]);
+      itemKeyboardRows.push([{ text: `${n}. ${shortLabel(cleanedDisplay, 40)}`, callback_data: `noop` }]);
     }
   }
 
-  const navRow = [];
-  if (p > 0) navRow.push({ text: '⬅️ Prev', callback_data: `index_prev_${p-1}` });
-  navRow.push({ text: `Page ${p+1}/${totalPages}`, callback_data: `index_page_${p}` });
-  if (p < totalPages - 1) navRow.push({ text: 'Next ➡️', callback_data: `index_next_${p+1}` });
-  keyboardRows.push(navRow);
-  keyboardRows.push([{ text: '🔁 Refresh', callback_data: `index_refresh_${p}` }]);
+  // Pagination rows
+  const keyboardRows = [];
+  const navRowTop = [];
+  if (p > 0) navRowTop.push({ text: '⬅️ Prev', callback_data: `index_prev_${p - 1}` });
+  navRowTop.push({ text: `Page ${p + 1}/${totalPages}`, callback_data: `index_page_${p}` });
+  if (p < totalPages - 1) navRowTop.push({ text: 'Next ➡️', callback_data: `index_next_${p + 1}` });
 
-  const text = `<b>Index</b> (showing ${start+1}–${Math.min(start + pageSize, total)} of ${total})\n\n` + lines.map(l => escapeHtml(l)).join('\n');
-  return { text, keyboard: { inline_keyboard: keyboardRows }, page: p, totalPages, pageSize };
+  if (navRowTop.length) keyboardRows.push(navRowTop);
+  for (const r of itemKeyboardRows) keyboardRows.push(r);
+  if (navRowTop.length) keyboardRows.push(navRowTop);
+
+  const headerTitle = 'FILE INDEX : Click on the buttons to view files or to view token';
+  const rangeText = `SHOWING ${start + 1} – ${Math.min(start + pageSize, total)} OF ${total}`;
+
+  // Plain text result (no MarkdownV2 escaping)
+  const text = [headerTitle, rangeText, ...(lines.length ? lines : ['NO ITEMS FOUND'])].join('\n');
+
+  return {
+    text,
+    keyboard: { inline_keyboard: keyboardRows },
+    page: p,
+    totalPages,
+    pageSize
+  };
 }
 
 // ---------- small wrappers ----------
@@ -656,8 +596,6 @@ bot.on('message', async (msg) => {
       delete pendingAddTo[chatId];
       const batch = readBatchFile(pending.filename);
       if (!batch) return safeSendMessage(chatId, 'Batch not found after add.');
-      // schedule metadata fetch
-      setImmediate(() => backgroundFetchMetadataForMissing().catch(()=>{}));
       return safeSendMessage(chatId, `Added ${pending.files.length} items to ${batch.display_name || batch.filename}.`);
     }
 
@@ -680,8 +618,6 @@ bot.on('message', async (msg) => {
       kb.inline_keyboard.push([{ text: 'Contact Admin', url: 'https://t.me/aswinlalus' }]);
       const previewText = batch.display_name ? `Saved ${batch.filename}\n${batch.display_name}` : `Saved ${batch.filename}`;
       await safeSendMessage(chatId, `${previewText}\nPreview link available.`, { reply_markup: kb });
-      // schedule background metadata fetch
-      setImmediate(() => backgroundFetchMetadataForMissing().catch(()=>{}));
       return;
     }
 
@@ -724,18 +660,51 @@ bot.on('message', async (msg) => {
       const preview = formatCaptionHtmlForPreview(text);
       await safeSendMessage(chatId, 'Caption updated. Preview (first lines):');
       await safeSendMessage(chatId, preview, { parse_mode: 'HTML' });
-      // schedule metadata refresh (maybe changed)
-      setImmediate(() => backgroundFetchMetadataForMissing().catch(()=>{}));
       return;
     }
 
-    // listfiles
+    // /listfiles with pagination (e.g., "/listfiles 2")
+    const PAGE_SIZE = 10;
+
     if (text && text.startsWith('/listfiles')) {
-      if (ADMIN_ID && fromId !== ADMIN_ID) return safeSendMessage(chatId, 'Only admin may use /listfiles.');
+      if (ADMIN_ID && fromId !== ADMIN_ID) {
+        return safeSendMessage(chatId, 'Only admin may use /listfiles.');
+      }
+
       const idx = readIndex();
-      if (!idx.order || idx.order.length === 0) return safeSendMessage(chatId, 'No batches found.');
-      let out = 'Batches (send order):\n';
-      idx.order.forEach((fname,i)=>{ const token = Object.keys(idx.tokens).find(t=>idx.tokens[t]===fname); const batch = readBatchFile(fname); const name = batch && batch.display_name ? batch.display_name : fname; out += `${i+1}. ${name} — token: /start_${token}\n`; });
+      const order = (idx && idx.order) ? idx.order : [];
+      if (order.length === 0) {
+        return safeSendMessage(chatId, 'No batches found.');
+      }
+
+      // Parse optional page arg: "/listfiles 2"
+      const parts = text.trim().split(/\s+/);
+      const requestedPage = parts[1] ? parseInt(parts[1], 10) : 1;
+
+      const total = order.length;
+      const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+      const page = Math.min(totalPages, Math.max(1, isNaN(requestedPage) ? 1 : requestedPage));
+
+      const start = (page - 1) * PAGE_SIZE;
+      const end = Math.min(start + PAGE_SIZE, total);
+
+      let out = `Batches (send order) — page ${page}/${totalPages}:\n`;
+
+      order.slice(start, end).forEach((fname, i) => {
+        const token = Object.keys(idx.tokens).find(t => idx.tokens[t] === fname);
+        const batch = readBatchFile(fname);
+        const name = batch && batch.display_name ? batch.display_name : fname;
+        const n = start + i + 1; // global ordinal
+        out += `${n}. ${name} — token: /start_${token}\n`;
+      });
+
+      // Text navigation hints
+      if (totalPages > 1) {
+        out += `\nNavigate:\n`;
+        if (page > 1) out += `← Prev: /listfiles ${page - 1}\n`;
+        if (page < totalPages) out += `Next → /listfiles ${page + 1}\n`;
+      }
+
       return safeSendMessage(chatId, out);
     }
 
@@ -752,28 +721,27 @@ bot.on('message', async (msg) => {
       try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); delete idx.tokens[token]; idx.order = idx.order.filter(f=>f!==filename); writeIndex(idx); const meta = readMeta(); if (meta.batch_meta) { delete meta.batch_meta[filename]; writeMeta(meta); } return safeSendMessage(chatId, `Deleted ${filename} (token ${token})`); } catch(e){ console.error(e); return safeSendMessage(chatId, 'Delete failed: '+(e && e.message)); }
     }
 
-    // index page size
-    if (text && text.startsWith('/set_index_page_size')) {
-      if (ADMIN_ID && fromId !== ADMIN_ID) return safeSendMessage(chatId, 'Only admin may set this.');
-      const parts = text.split(/\s+/);
-      if (parts.length < 2) return safeSendMessage(chatId, 'Usage: /set_index_page_size <n>');
-      const n = Number(parts[1]);
-      if (!n || n < 1 || n > 50) return safeSendMessage(chatId, 'n must be a number between 1 and 50');
-      const meta = readMeta(); meta.index_page_size = n; writeMeta(meta);
-      return safeSendMessage(chatId, `Index page size set to ${n}.`);
-    }
-
-    // refresh metadata
-    if (text && text.startsWith('/refresh_metadata')) {
-      if (ADMIN_ID && fromId !== ADMIN_ID) return safeSendMessage(chatId, 'Only admin may refresh metadata.');
-      setImmediate(() => backgroundFetchMetadataForMissing().catch(()=>{}));
-      return safeSendMessage(chatId, 'Metadata refresh queued (running in background).');
-    }
-
-    // /start (no token) - present Browse + inline placeholder
+    // /start (no token) - 2+1+1 inline keyboard with Contact Admin
     if (text && (text === '/start' || text.trim() === `/start@${BOT_USERNAME}`)) {
-      const kb = { inline_keyboard: [[ { text: 'Browse', callback_data: 'browse_open' }, { text: 'Search inline', switch_inline_query_current_chat: '' } ], [ { text: 'Contact Admin', url: 'https://t.me/aswinlalus' } ]] };
-      return safeSendMessage(chatId, `Use Browse to preview latest uploads or use inline search (type @${BOT_USERNAME} in any chat).`, { reply_markup: kb });
+      const kb = {
+        inline_keyboard: [
+          [
+            { text: '🧭 Browse', callback_data: 'browse_open' },
+            { text: '🔎 Search for Movie/Series', switch_inline_query_current_chat: '' }
+          ],
+          [
+            { text: '🗂️ View index', callback_data: 'view_index' }
+          ],
+          [
+            { text: '📨 Contact Admin', url: 'https://t.me/aswinlalus' }
+          ]
+        ]
+      };
+      return safeSendMessage(
+        chatId,
+        `Use Browse to preview latest uploads or use inline search (type @${BOT_USERNAME} in any chat).`,
+        { reply_markup: kb }
+      );
     }
 
     // /start with token - show batch files
@@ -803,8 +771,22 @@ bot.on('message', async (msg) => {
 
     // help
     if (text && text === '/help') {
-      const kb = { inline_keyboard: [[ { text:'User', callback_data:'help_user' }, { text:'Admin', callback_data:'help_admin' } ], [ { text:'Contact Admin', url: 'https://t.me/aswinlalus' } ]] };
-      return safeSendMessage(chatId, 'Choose User or Admin help. Admin button requires admin privileges.', { reply_markup: kb });
+      const kb = {
+        inline_keyboard: [
+          [
+            { text: '👤 User', callback_data: 'help_user' },
+            { text: '🛠️ Admin', callback_data: 'help_admin' }
+          ],
+          [
+            { text: '🔎 Try inline', switch_inline_query_current_chat: '' }
+          ],
+          [
+            { text: '📨 Contact Admin', url: 'https://t.me/aswinlalus' }
+          ]
+        ]
+      };
+      const helpText = 'Choose User or Admin help. Admin button requires admin privileges.';
+      return safeSendMessage(chatId, helpText, { reply_markup: kb });
     }
 
     // /browse -> preview latest
@@ -894,7 +876,6 @@ bot.on('message', async (msg) => {
           const appended = await addFileToExistingBatch(chatId, pending.token, fileMeta);
           pending.files.push(fileMeta);
           await safeSendMessage(chatId, `Appended item to batch "${appended.display_name || appended.filename}" (now total ${appended.files.length}).`);
-          setImmediate(() => backgroundFetchMetadataForMissing().catch(()=>{}));
         } catch (e) {
           console.warn('append failed', e && e.message);
           await safeSendMessage(chatId, 'Failed to append item.');
@@ -934,7 +915,6 @@ bot.on('message', async (msg) => {
         const updatedBatch = await addFileToPending(chatId, fileMeta);
         const count = updatedBatch && updatedBatch.files ? updatedBatch.files.length : '?';
         await safeSendMessage(chatId, `Added item to batch "${updatedBatch.display_name || updatedBatch.filename}" (total items: ${count}).`);
-        setImmediate(() => backgroundFetchMetadataForMissing().catch(()=>{}));
       } catch (e) {
         console.warn('Failed to add file to pending', e && e.message);
         await safeSendMessage(chatId, 'Failed to add file to batch.');
@@ -1008,18 +988,39 @@ bot.on('inline_query', async (q) => {
 // ---------- callback_query handler ----------
 bot.on('callback_query', async (q) => {
   try {
-    const data = q.data || ''; const chatId = q.message && q.message.chat && q.message.chat.id; const msgId = q.message && q.message.message_id;
-    if (!data) return safeAnswerCallbackQuery(q.id);
+    const data = q.data || '';
+    const chatId = q.message && q.message.chat && q.message.chat.id;
+    const msgId = q.message && q.message.message_id;
+    if (!data) return safeAnswerCallbackQuery(q.id); // acknowledge empty presses
 
     // help user/admin
     if (data === 'help_user' || data === 'help_admin') {
-      await safeAnswerCallbackQuery(q.id);
+      await safeAnswerCallbackQuery(q.id); // acknowledge tap to clear spinner
+
       if (data === 'help_user') {
-        await safeSendMessage(chatId, `User help — use @${BOT_USERNAME} inline or /browse or open a token with /start_<TOKEN>.\nExample: /start_OBQUMJSSK9YB`);
+        const text = `👤 User help — use @${BOT_USERNAME} inline or /browse or open a token with /start_<TOKEN>.\nExample: /start_OBQUMJSSK9YB`;
+        const replyMarkup = {
+          inline_keyboard: [
+            [
+              // Prefill inline mode in current chat (opens input with @bot)
+              { text: '🔎 Search ', switch_inline_query_current_chat: '' },
+              // Route to a browse flow in your bot
+              { text: '🧭 Browse', callback_data: 'browse' }
+            ],
+            [
+              { text: 'ℹ️ More help', callback_data: 'help_user_more' }
+            ]
+          ]
+        };
+        await safeSendMessage(chatId, text, { reply_markup: replyMarkup });
         return;
       }
+
       if (data === 'help_admin') {
-        if (q.from && q.from.id !== ADMIN_ID) return safeAnswerCallbackQuery(q.id, { text: 'Admin only' });
+        if (q.from && q.from.id !== ADMIN_ID) {
+          return safeAnswerCallbackQuery(q.id, { text: 'Admin only' });
+        }
+
         const helpText =
 `🛠️ Admin help — available commands:
 • /sendfile — start a new batch (reply filename or just upload files to auto-detect). Finish with /doneadd
@@ -1029,15 +1030,86 @@ bot.on('callback_query', async (q) => {
 • /edit_caption <TOKEN> — edit a specific file caption
 • /listfiles — list batches and tokens
 • /deletefile <TOKEN> — delete a batch
-• /set_index_page_size <n> — set items per index page
-• /refresh_metadata — re-fetch metadata (background)
-• /listusers and /getuser <id> — user tracking
-Notes:
-• Metadata is fetched from Wikipedia in the background and stored; it may take some minutes to appear in the index.
-• Reordering batches is possible when viewing the index (admin only). Reordering files inside a batch is available in the 'View files' list (admin).`;
-        await safeSendMessage(chatId, helpText);
+• /listusers and /getuser <id> — user tracking`;
+
+        const replyMarkup = {
+          inline_keyboard: [
+            [
+              { text: '📤 Send files', callback_data: 'admin_sendfile' },
+              { text: '➕ Add to batch', callback_data: 'admin_addto' }
+            ],
+            [
+              { text: '✅ Finalize', callback_data: 'admin_finalize' },
+              { text: '🗂 List files', callback_data: 'admin_listfiles' }
+            ],
+            [
+              { text: '📝 Edit caption', callback_data: 'admin_edit_caption' },
+              { text: '🗑 Delete batch', callback_data: 'admin_deletefile' }
+            ],
+            [
+              { text: '👥 Users', callback_data: 'admin_users' }
+            ]
+          ]
+        };
+        await safeSendMessage(chatId, helpText, { reply_markup: replyMarkup });
         return;
       }
+    }
+
+    // Handle new help actions (examples)
+    if (data === 'browse') {
+      await safeAnswerCallbackQuery(q.id, { text: 'Browse' });
+      await safeSendMessage(chatId, 'Use /browse to explore files and tokens.');
+      return;
+    }
+
+    if (data === 'help_user_more') {
+      await safeAnswerCallbackQuery(q.id, { text: 'More help' });
+      await safeSendMessage(chatId, 'Tip: use inline mode with “ @${BOT_USERNAME} query” to search from any chat.');
+      return;
+    }
+
+    // Admin action examples (wire up to your flows)
+    if (data === 'admin_sendfile') {
+      await safeAnswerCallbackQuery(q.id, { text: 'Send files' });
+      await safeSendMessage(chatId, 'Reply with a filename or upload files to begin /sendfile.');
+      return;
+    }
+
+    if (data === 'admin_addto') {
+      await safeAnswerCallbackQuery(q.id, { text: 'Add to batch' });
+      await safeSendMessage(chatId, 'Use /addto <TOKEN> then upload files to append.');
+      return;
+    }
+
+    if (data === 'admin_finalize') {
+      await safeAnswerCallbackQuery(q.id, { text: 'Finalize' });
+      await safeSendMessage(chatId, 'Use /doneadd or /doneaddto to finalize.');
+      return;
+    }
+
+    if (data === 'admin_listfiles') {
+      await safeAnswerCallbackQuery(q.id, { text: 'List files' });
+      await safeSendMessage(chatId, 'Run /listfiles to list batches and tokens.');
+      return;
+    }
+
+    if (data === 'admin_edit_caption') {
+      await safeAnswerCallbackQuery(q.id, { text: 'Edit caption' });
+      await safeSendMessage(chatId, 'Use /edit_caption <TOKEN> to edit a caption.');
+      return;
+    }
+
+    if (data === 'admin_deletefile') {
+      await safeAnswerCallbackQuery(q.id, { text: 'Delete batch' });
+      await safeSendMessage(chatId, 'Use /deletefile <TOKEN> to delete a batch.');
+      return;
+    }
+
+    if (data === 'admin_users') {
+      await safeAnswerCallbackQuery(q.id, { text: 'Users' });
+      await safeSendMessage(chatId, 'Use /listusers or /getuser <id> for user tracking.');
+      return;
     }
 
     // index & browse callbacks
@@ -1168,12 +1240,47 @@ Notes:
       }
 
       if (data === 'browse_view') {
-        const fname = order[session.pos]; const batch = readBatchFile(fname); if (!batch) return safeSendMessage(chatId, 'Batch missing.');
-        const token = Object.keys(readIndex().tokens || {}).find(t => readIndex().tokens[t] === fname);
+        const fname = order[session.pos];
+        const batch = readBatchFile(fname);
+        if (!batch) return safeSendMessage(chatId, 'Batch missing.');
+
+        // try to find token from index (fallback to batch.token if present)
+        const token = Object.keys(readIndex().tokens || {}).find(t => readIndex().tokens[t] === fname) || batch.token || '';
+
         const asAdmin = (q.from && q.from.id === ADMIN_ID);
+
+        // build & update files keyboard (keeps existing behaviour)
         const filesKb = buildFilesKeyboardForBatch(token, batch, asAdmin);
-        try { await bot.editMessageReplyMarkup({ inline_keyboard: filesKb.inline_keyboard }, { chat_id: chatId, message_id: session.messageId }); } catch (e) { await safeSendMessage(chatId, 'Files:', { reply_markup: filesKb }); }
-        return;
+        try {
+          await bot.editMessageReplyMarkup({ inline_keyboard: filesKb.inline_keyboard }, { chat_id: chatId, message_id: session.messageId });
+        } catch (e) {
+          await safeSendMessage(chatId, 'Files:', { reply_markup: filesKb });
+        }
+
+        // --- NEW: send all files in the batch to the user (same as /start with token) ---
+        try {
+          if (!Array.isArray(batch.files) || batch.files.length === 0) {
+            return safeSendMessage(chatId, 'No files in this batch.');
+          }
+
+          for (let i = 0; i < batch.files.length; i++) {
+            const item = batch.files[i];
+            await sendBatchItemToChat(chatId, batch, item);
+            // small pause between sends to avoid flood limits
+            await sleep(120);
+          }
+
+          // after sending all items, prompt for rating (1–10) same as /start handler
+          const row1 = [], row2 = [];
+          for (let s = 1; s <= 5; s++) row1.push({ text: `${s}⭐`, callback_data: `rate_${token}_${s}` });
+          for (let s = 6; s <= 10; s++) row2.push({ text: `${s}⭐`, callback_data: `rate_${token}_${s}` });
+
+          return safeSendMessage(chatId, 'Rate this batch (1–10):', { reply_markup: { inline_keyboard: [row1, row2] } });
+
+        } catch (err) {
+          console.error('Error sending batch files:', err);
+          return safeSendMessage(chatId, 'Failed to send batch files. Try again later.');
+        }
       }
 
       if (data === 'browse_list') {
@@ -1273,6 +1380,109 @@ Notes:
   }
 });
 
+bot.on('callback_query', async (callbackQuery) => {
+  try {
+    const data = callbackQuery.data || '';
+    const parts = data.split('|');
+    const cmd = parts[0];
+    const key = parts[1];
+
+    if (cmd === 'copytoken') {
+      const rec = key ? __callbackTokenMap[key] : null;
+      if (!rec || !rec.token) {
+        return bot.answerCallbackQuery(callbackQuery.id, { text: 'Token expired or unavailable', show_alert: true });
+      }
+      await bot.answerCallbackQuery(callbackQuery.id); // remove spinner
+      const safeText = `Token for "${rec.display || ''}":\n\`${rec.token}\``;
+      try {
+        await bot.sendMessage(callbackQuery.from.id, safeText, { parse_mode: 'MarkdownV2' });
+      } catch (e) {
+        // fallback if DM fails
+        await bot.answerCallbackQuery(callbackQuery.id, { text: `Token: ${rec.token}`, show_alert: true });
+      }
+      return;
+    }
+
+    if (cmd === 'indexview') {
+      const rec = key ? __callbackTokenMap[key] : null;
+      const token = rec ? rec.token : null;
+      const page = parts[2] ? Number(parts[2]) : 0;
+
+      // stop spinner
+      await bot.answerCallbackQuery(callbackQuery.id);
+
+      if (!token) {
+        return bot.sendMessage(callbackQuery.message.chat.id, 'Preview token expired or invalid. Try the index again.');
+      }
+
+      // 1) Prefer your existing preview function(s) if present
+      if (typeof handleIndexView === 'function') {
+        return handleIndexView(callbackQuery.message.chat.id, token, page, callbackQuery);
+      }
+      if (typeof showBatchPreview === 'function') {
+        return showBatchPreview(callbackQuery.message.chat.id, token, page, callbackQuery);
+      }
+      if (typeof handleBrowse === 'function') {
+        return handleBrowse(callbackQuery.message.chat.id, token, { fromCallback: callbackQuery });
+      }
+
+      // 2) Fallback: try to read the batch and send a first-file caption like /browse would
+      try {
+        const idx = readIndex();
+        const filename = (idx && idx.tokens && idx.tokens[token]) ? idx.tokens[token] : null;
+        let batch = null;
+        if (filename) batch = readBatchFile(filename);
+        // fallback: maybe token maps to display name; attempt to find matching filename
+        if (!batch && idx && idx.order) {
+          const candidate = idx.order.find(fn => {
+            const b = readBatchFile(fn);
+            const name = (b && b.display_name) ? String(b.display_name) : fn;
+            return name === token || name === rec?.display;
+          });
+          if (candidate) batch = readBatchFile(candidate);
+        }
+
+        if (!batch) {
+          // we can't construct a full preview — provide the deep link + caption fallback
+          const openUrl = (typeof BOT_USERNAME !== 'undefined' && BOT_USERNAME) ? `https://t.me/${BOT_USERNAME}?start=${encodeURIComponent(token)}` : `https://t.me/?start=${encodeURIComponent(token)}`;
+          return bot.sendMessage(callbackQuery.message.chat.id, `Preview not available here. Open using the link below:\n${openUrl}`);
+        }
+
+        // try to locate first file and its caption
+        const first = (batch.files && batch.files[0]) || (batch.items && batch.items[0]) || null;
+        const caption = first && (first.caption || first.title || first.text) ? String(first.caption || first.title || first.text) : (batch.caption || `Preview: ${batch.display_name || batch.filename || 'item'}`);
+
+        // best-effort preview: if it's just a caption/text, send it
+        if (!first || (!first.file_id && !first.fileId && !first.id)) {
+          // no file id — send the caption + deep link
+          const openUrl = (typeof BOT_USERNAME !== 'undefined' && BOT_USERNAME) ? `https://t.me/${BOT_USERNAME}?start=${encodeURIComponent(token)}` : `https://t.me/?start=${encodeURIComponent(token)}`;
+          return bot.sendMessage(callbackQuery.message.chat.id, `${caption}\n\nOpen: ${openUrl}`);
+        }
+
+        // If we have a file id, attempt to send the file. We try common senders in order:
+        const fileId = first.file_id || first.fileId || first.id;
+        // try sendPhoto, sendVideo, sendDocument — choose by declared type if available
+        if (first.mime_type && first.mime_type.startsWith('image')) {
+          return bot.sendPhoto(callbackQuery.message.chat.id, fileId, { caption });
+        }
+        if (first.mime_type && first.mime_type.startsWith('video')) {
+          return bot.sendVideo(callbackQuery.message.chat.id, fileId, { caption });
+        }
+        // default to document send
+        return bot.sendDocument(callbackQuery.message.chat.id, fileId, {}, { caption });
+      } catch (e) {
+        console.error('indexview fallback error', e);
+        return bot.sendMessage(callbackQuery.message.chat.id, 'Unable to show preview. Try opening the item using the Open link.');
+      }
+    }
+
+    // keep other callback handlers (prev/next/page etc) in place
+  } catch (err) {
+    console.error('callback_query error', err);
+    try { await bot.answerCallbackQuery(callbackQuery.id, { text: 'Error', show_alert: false }); } catch (e) {}
+  }
+});
+
 // ---------- fuzzy helpers ----------
 function levenshtein(a,b){ if(!a) return b?b.length:0; if(!b) return a.length; a=a.toLowerCase(); b=b.toLowerCase(); const m=a.length, n=b.length; const dp=Array.from({length:m+1},()=>new Array(n+1).fill(0)); for(let i=0;i<=m;i++) dp[i][0]=i; for(let j=0;j<=n;j++) dp[0][j]=j; for(let i=1;i<=m;i++) for(let j=1;j<=n;j++){ const cost = a[i-1]===b[j-1]?0:1; dp[i][j]=Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost); } return dp[m][n]; }
 function similarity(a,b){ const maxLen=Math.max((a||'').length,(b||'').length,1); const dist=levenshtein(a||'', b||''); return 1-(dist/maxLen); }
@@ -1280,5 +1490,5 @@ function similarity(a,b){ const maxLen=Math.max((a||'').length,(b||'').length,1)
 // ---------- misc ----------
 function exportBatchCsv(filename) { const batch = readBatchFile(filename); if (!batch) return null; const rows=['index,file_name,type,file_id']; batch.files.forEach((f,i)=>{ rows.push(`${i+1},"${(f.file_name||f.text||'').replace(/"/g,'""')}",${f.type},${f.file_id||''}`); }); return rows.join('\n'); }
 
-console.log('Bot ready. Commands: /help, /sendfile, /doneadd, /addto <TOKEN>, /doneaddto, /edit_caption <TOKEN>, /listfiles, /deletefile <TOKEN>, /set_index_page_size <n>, /refresh_metadata (admin), /listusers, /getuser <id>, /start_<TOKEN>, /browse, /view_index');
-console.log('Background metadata fetch (Wikipedia) enabled; metadata loads in background and is cached in ./data/meta.json');
+console.log('Bot ready. Commands: /help, /sendfile, /doneadd, /addto <TOKEN>, /doneaddto, /edit_caption <TOKEN>, /listfiles, /deletefile <TOKEN>, /listusers, /getuser <id>, /start_<TOKEN>, /browse, /view_index');
+
