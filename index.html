@@ -1,48 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- ✅ Monetag script -->
-  <script src="https://libtl.com/sdk.js"
-          data-zone='10913884'
-          data-sdk='show_10913884'></script>
+  <!-- ✅ Monetag SDK -->
+  <script src="https://libtl.com/sdk.js" data-zone="10913884" data-sdk="show_10913884"></script>
 </head>
 
-<body>
-  <h3 id="status">🔓 Click below to unlock</h3>
+<body style="text-align: center; font-family: sans-serif; padding-top: 50px; background-color: #f4f4f9;">
+  <h3 id="status">🔓 Unlock Content</h3>
+  <p id="instruction">Watch a short ad to receive your file.</p>
 
-  <button onclick="runAd()">🎬 Watch Ad</button>
+  <!-- Styled button for better UX -->
+  <button id="adBtn" onclick="runAd()" style="padding: 15px 30px; font-size: 18px; background: #0088cc; color: white; border: none; border-radius: 8px; cursor: pointer;">
+    🎬 Watch Ad to Unlock
+  </button>
 
   <script>
     const tg = window.Telegram.WebApp;
-    tg.expand();
+    tg.expand(); // Full screen
 
+    // Get the token from URL
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
 
-    function runAd() {
+    async function runAd() {
+      const btn = document.getElementById("adBtn");
+      const status = document.getElementById("status");
+
       if (typeof show_10913884 === "function") {
-        document.getElementById("status").innerText = "⏳ Loading ad...";
+        try {
+          btn.disabled = true;
+          btn.innerText = "⏳ Loading Ad...";
+          
+          // 1. Trigger the Ad
+          await show_10913884();
+          
+          // 2. Ad Completed successfully
+          status.innerText = "✅ Ad Verified!";
+          btn.innerText = "Closing...";
+          btn.style.background = "#28a745";
 
-        show_10913884().then(() => {
-          document.getElementById("status").innerText = "✅ Ad completed";
+          // 3. Send data back to Bot
+          // We use a prefix to ensure the bot identifies this specific data
+          tg.sendData("monetag_unlock:" + token);
+          
+          // Close after a short delay so user sees success
+          setTimeout(() => tg.close(), 1000);
 
-          // send unlock immediately
-          tg.sendData("unlock:" + token);
-          tg.close();
-
-        }).catch(() => {
-          document.getElementById("status").innerText = "⚠️ Ad failed. Try again.";
-        });
-
-        show_10913884().then(() => {
-            adCompleted = true;
-            document.getElementById("continueBtn").style.display = "block";
-        });
-
+        } catch (error) {
+          console.error("Ad error:", error);
+          status.innerText = "⚠️ Ad Interrupted";
+          btn.disabled = false;
+          btn.innerText = "🔄 Try Again";
+        }
       } else {
-        document.getElementById("status").innerText = "❌ Ad SDK not loaded";
+        status.innerText = "❌ Ad Engine Offline";
+        btn.innerText = "Please Refresh";
       }
     }
   </script>
