@@ -4,22 +4,39 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://libtl.com/sdk.js" data-zone="10913884" data-sdk="show_10913884"></script>
+  
+  <!-- ✅ Monetag SDK for Zone 10914537 -->
+  <script src="https://libtl.com/sdk.js" data-zone="10914537" data-sdk="show_10914537"></script>
 
   <style>
-    body { text-align: center; font-family: sans-serif; padding-top: 50px; 
-           background-color: var(--tg-theme-bg-color, #ffffff); color: var(--tg-theme-text-color, #000000); }
-    #actionBtn { padding: 15px 30px; font-size: 18px; font-weight: bold; background: #808080; 
-                 color: white; border: none; border-radius: 12px; width: 80%; transition: 0.3s; }
-    #actionBtn.ready { background: #0088cc; cursor: pointer; }
-    #timer { font-size: 24px; color: #d9534f; font-weight: bold; margin-bottom: 10px; }
+    body { 
+      text-align: center; 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; 
+      padding-top: 60px; 
+      background-color: var(--tg-theme-bg-color, #ffffff);
+      color: var(--tg-theme-text-color, #000000);
+    }
+    #timer { font-size: 48px; font-weight: bold; color: #0088cc; margin: 20px 0; }
+    #status { font-size: 18px; margin-bottom: 30px; opacity: 0.8; }
+    #actionBtn {
+      padding: 18px 35px;
+      font-size: 20px;
+      font-weight: bold;
+      background: #808080;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      width: 85%;
+      transition: all 0.3s ease;
+    }
+    #actionBtn.ready { background: #28a745; cursor: pointer; box-shadow: 0 4px 15px rgba(40,167,69,0.3); }
   </style>
 </head>
 
 <body>
-  <h3 id="status">🔒 Content Locked</h3>
+  <div id="status">Please wait for the content to unlock...</div>
   <div id="timer">--</div>
-  <button id="actionBtn" disabled>Please wait...</button>
+  <button id="actionBtn" disabled>🔒 Locked</button>
 
   <script>
     const tg = window.Telegram.WebApp;
@@ -30,40 +47,45 @@
     
     const btn = document.getElementById("actionBtn");
     const timerDisplay = document.getElementById("timer");
-    const status = document.getElementById("status");
+    const statusDisplay = document.getElementById("status");
 
-    // Countdown logic
+    // Start Countdown
     const countdown = setInterval(() => {
       timeLeft--;
-      timerDisplay.innerText = timeLeft + "s";
-      
       if (timeLeft <= 0) {
         clearInterval(countdown);
-        timerDisplay.innerText = "✅ Time Up!";
-        status.innerText = "🔓 Ready to Unlock";
+        timerDisplay.innerText = "✅";
+        statusDisplay.innerText = "Content Unlocked! Watch ad to finish.";
         btn.disabled = false;
-        btn.innerText = "🎬 Watch Ad & Finish";
+        btn.innerText = "🚀 Watch Ad & Unlock";
         btn.classList.add("ready");
       } else {
         timerDisplay.innerText = timeLeft + "s";
       }
     }, 1000);
 
-    async function handleBtnClick() {
-      if (typeof show_10913884 === "function") {
-        btn.disabled = true;
-        btn.innerText = "Loading Ad...";
-        try {
-          await show_10913884();
-          tg.close(); // Close WebApp, user then clicks "Verify" in bot
-        } catch (err) {
-          alert("Ad failed. Please try again.");
-          btn.disabled = false;
-        }
-      }
-    }
+    btn.onclick = () => {
+      btn.disabled = true;
+      btn.innerText = "Loading Ad...";
 
-    btn.onclick = handleBtnClick;
+      // ✅ Method 2: Rewarded Popup Logic
+      if (typeof show_10914537 === "function") {
+        show_10914537('pop').then(() => {
+          // Ad watched successfully or closed
+          statusDisplay.innerText = "✨ Success! Return to the bot.";
+          btn.innerText = "Closing...";
+          setTimeout(() => { tg.close(); }, 1000);
+        }).catch(e => {
+          // Ad failed
+          statusDisplay.innerText = "⚠️ Ad failed. Try again.";
+          btn.disabled = false;
+          btn.innerText = "🚀 Watch Ad & Unlock";
+        });
+      } else {
+        alert("Ad Engine not loaded. Please check your connection.");
+        btn.disabled = false;
+      }
+    };
   </script>
 </body>
 </html>
