@@ -7,16 +7,38 @@
 
   <!-- ✅ Monetag SDK -->
   <script src="https://libtl.com/sdk.js" data-zone="10913884" data-sdk="show_10913884"></script>
+
+  <style>
+    body { 
+      text-align: center; 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+      padding-top: 50px; 
+      background-color: var(--tg-theme-bg-color, #ffffff);
+      color: var(--tg-theme-text-color, #000000);
+    }
+    #actionBtn {
+      padding: 15px 30px;
+      font-size: 18px;
+      font-weight: bold;
+      background: #0088cc;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      width: 80%;
+      transition: all 0.3s ease;
+    }
+    #actionBtn.verified {
+      background: #28a745;
+    }
+    #status { margin-bottom: 20px; }
+  </style>
 </head>
 
-<body style="text-align: center; font-family: sans-serif; padding-top: 50px; background-color: #f4f4f9;">
-  <h3 id="status">🔓 Unlock Content</h3>
-  <p id="instruction">Watch a short ad to receive your file.</p>
-
-  <!-- Styled button for better UX -->
-  <button id="adBtn" onclick="runAd()" style="padding: 15px 30px; font-size: 18px; background: #0088cc; color: white; border: none; border-radius: 8px; cursor: pointer;">
-    🎬 Watch Ad to Unlock
-  </button>
+<body>
+  <h3 id="status">🔓 Content Locked</h3>
+  
+  <button id="actionBtn" onclick="handleBtnClick()">🎬 Watch Ad</button>
 
   <script>
     const tg = window.Telegram.WebApp;
@@ -24,35 +46,46 @@
 
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
+    
+    let adFinished = false;
 
-    async function runAd() {
-        const status = document.getElementById("status");
-        
+    async function handleBtnClick() {
+      const btn = document.getElementById("actionBtn");
+      const status = document.getElementById("status");
+
+      // STATE 1: RUN THE AD
+      if (!adFinished) {
         if (typeof show_10913884 === "function") {
-            status.innerText = "⏳ Loading Ad...";
+          status.innerText = "⏳ Loading ad...";
+          btn.disabled = true;
+          btn.innerText = "Please wait...";
 
-            try {
-                await show_10913884();
-                
-                // SUCCESS LOGIC
-                status.innerText = "✅ Verification Success!";
-                
-                // CRITICAL: This sends the string to the bot's 'on message' handler
-                // It only works because we are using a Reply Keyboard Button now
-                tg.sendData("unlock:" + token); 
-                
-                // Close the WebApp
-                setTimeout(() => {
-                    tg.close();
-                }, 500);
+          try {
+            await show_10913884();
+            
+            // Ad finished successfully
+            adFinished = true;
+            status.innerText = "✨ Ad Completed Successfully!";
+            btn.disabled = false;
+            btn.innerText = "✅ Verify & Get File";
+            btn.classList.add("verified");
 
-            } catch (err) {
-                status.innerText = "⚠️ Ad failed or was skipped.";
-            }
+          } catch (err) {
+            status.innerText = "⚠️ Ad failed. Please try again.";
+            btn.disabled = false;
+            btn.innerText = "🎬 Watch Ad";
+          }
         } else {
-            status.innerText = "❌ SDK Error";
+          status.innerText = "❌ Ad Engine not loaded";
         }
+      } 
+      // STATE 2: VERIFY AND SEND DATA
+      else {
+        btn.innerText = "Verifying...";
+        tg.sendData("unlock:" + token);
+        // tg.sendData automatically closes the WebApp
+      }
     }
-</script>
+  </script>
 </body>
 </html>
