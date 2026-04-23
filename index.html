@@ -22,22 +22,14 @@
 
     let adCompleted = false;
 
-    // ✅ THIS is your rewarded ad logic
     function runAd() {
-      if (typeof show_10913884 === "function") {
+    if (typeof show_10913884 === "function") {
         show_10913884().then(() => {
-          adCompleted = true;
-
-          document.getElementById("status").innerText =
-            "✅ You have seen an ad!";
-
-          document.getElementById("continueBtn").style.display = "block";
-
+        tg.sendData("unlock:" + token);
         }).catch(() => {
-          document.getElementById("status").innerText =
-            "⚠️ Ad failed. Reload.";
+        alert("Ad not completed");
         });
-      }
+    }
     }
 
     window.onload = runAd;
