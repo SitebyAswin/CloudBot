@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- ✅ Monetag script -->
+  <script src='//libtl.com/sdk.js'
+          data-zone='10913884'
+          data-sdk='show_10913884'></script>
+</head>
+
+<body>
+  <h3 id="status">🔄 Loading ad...</h3>
+  <button id="continueBtn" style="display:none;" onclick="continueToBot()">
+    Continue
+  </button>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    let adCompleted = false;
+
+    // ✅ THIS is your rewarded ad logic
+    function runAd() {
+      if (typeof show_10913884 === "function") {
+        show_10913884().then(() => {
+          adCompleted = true;
+
+          document.getElementById("status").innerText =
+            "✅ You have seen an ad!";
+
+          document.getElementById("continueBtn").style.display = "block";
+
+        }).catch(() => {
+          document.getElementById("status").innerText =
+            "⚠️ Ad failed. Reload.";
+        });
+      }
+    }
+
+    window.onload = runAd;
+
+    function continueToBot() {
+      if (!adCompleted) {
+        alert("❌ Watch ad first");
+        return;
+      }
+
+      tg.sendData("unlock:" + token);
+      tg.close();
+    }
+  </script>
+</body>
+</html>
