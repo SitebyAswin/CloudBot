@@ -4,61 +4,86 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- ✅ Monetag SDK -->
   <script src="https://libtl.com/sdk.js" data-zone="10913884" data-sdk="show_10913884"></script>
+
   <style>
     body { 
-      text-align: center; font-family: sans-serif; padding: 40px 20px;
+      text-align: center; 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+      padding-top: 50px; 
       background-color: var(--tg-theme-bg-color, #ffffff);
       color: var(--tg-theme-text-color, #000000);
     }
-    .btn {
-      padding: 16px 32px; font-size: 18px; font-weight: bold; border: none;
-      border-radius: 12px; cursor: pointer; width: 100%; transition: 0.3s;
-      background: #0088cc; color: white; margin-top: 20px;
+    #actionBtn {
+      padding: 15px 30px;
+      font-size: 18px;
+      font-weight: bold;
+      background: #0088cc;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      width: 80%;
+      transition: all 0.3s ease;
     }
-    .btn:disabled { background: #cccccc; cursor: not-allowed; }
-    .success-icon { font-size: 50px; display: none; margin-bottom: 10px; }
+    #actionBtn.verified {
+      background: #28a745;
+    }
+    #status { margin-bottom: 20px; }
   </style>
 </head>
+
 <body>
-  <div id="content">
-    <h2 id="title">Unlock Content</h2>
-    <p id="msg">Watch the short ad video to verify you are human.</p>
-    <div id="icon" class="success-icon">✅</div>
-    <button id="mainBtn" class="btn" onclick="startAd()">🎬 Watch Ad Now</button>
-  </div>
+  <h3 id="status">🔓 Content Locked</h3>
+  
+  <button id="actionBtn" onclick="handleBtnClick()">🎬 Watch Ad</button>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    async function startAd() {
-      const btn = document.getElementById("mainBtn");
-      const msg = document.getElementById("msg");
-      const icon = document.getElementById("icon");
-      const title = document.getElementById("title");
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    
+    let adFinished = false;
 
-      if (typeof show_10913884 === "function") {
-        btn.disabled = true;
-        btn.innerText = "Loading Video...";
+    async function handleBtnClick() {
+      const btn = document.getElementById("actionBtn");
+      const status = document.getElementById("status");
 
-        try {
-          await show_10913884();
-          
-          // Ad finished successfully
-          title.innerText = "Verified!";
-          msg.innerHTML = "Ad watching confirmed. You can now close this window and click <b>Verify</b> in the bot.";
-          icon.style.display = "block";
-          btn.innerText = "Close Window";
-          btn.disabled = false;
-          btn.style.background = "#28a745";
-          btn.onclick = () => tg.close();
-          
-        } catch (err) {
-          msg.innerText = "Ad failed to load. Please try again.";
-          btn.disabled = false;
-          btn.innerText = "🎬 Try Again";
+      // STATE 1: RUN THE AD
+      if (!adFinished) {
+        if (typeof show_10913884 === "function") {
+          status.innerText = "⏳ Loading ad...";
+          btn.disabled = true;
+          btn.innerText = "Please wait...";
+
+          try {
+            await show_10913884();
+            
+            // Ad finished successfully
+            adFinished = true;
+            status.innerText = "✨ Ad Completed Successfully!";
+            btn.disabled = false;
+            btn.innerText = "✅ Verify & Get File";
+            btn.classList.add("verified");
+
+          } catch (err) {
+            status.innerText = "⚠️ Ad failed. Please try again.";
+            btn.disabled = false;
+            btn.innerText = "🎬 Watch Ad";
+          }
+        } else {
+          status.innerText = "❌ Ad Engine not loaded";
         }
+      } 
+      // STATE 2: VERIFY AND SEND DATA
+      else {
+        btn.innerText = "Verifying...";
+        tg.sendData("unlock:" + token);
+        // tg.sendData automatically closes the WebApp
       }
     }
   </script>
