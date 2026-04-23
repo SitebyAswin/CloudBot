@@ -40,8 +40,7 @@
   
   <button id="actionBtn" onclick="handleBtnClick()">🎬 Watch Ad</button>
 
-<!-- Inside your <script> tag in index.html -->
-<script>
+  <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
@@ -54,34 +53,39 @@
       const btn = document.getElementById("actionBtn");
       const status = document.getElementById("status");
 
+      // STATE 1: RUN THE AD
       if (!adFinished) {
         if (typeof show_10913884 === "function") {
           status.innerText = "⏳ Loading ad...";
           btn.disabled = true;
+          btn.innerText = "Please wait...";
 
           try {
             await show_10913884();
             
+            // Ad finished successfully
             adFinished = true;
-            status.innerText = "✨ Ad Completed!";
+            status.innerText = "✨ Ad Completed Successfully!";
             btn.disabled = false;
-            btn.innerText = "🚀 Get File Now";
+            btn.innerText = "✅ Verify & Get File";
             btn.classList.add("verified");
 
           } catch (err) {
-            status.innerText = "⚠️ Ad failed. Try again.";
+            status.innerText = "⚠️ Ad failed. Please try again.";
             btn.disabled = false;
+            btn.innerText = "🎬 Watch Ad";
           }
         } else {
           status.innerText = "❌ Ad Engine not loaded";
         }
       } 
+      // STATE 2: VERIFY AND SEND DATA
       else {
-        // Instead of tg.sendData (which creates the service message)
-        // we just close the WebApp. The user then clicks the "Verify" inline button.
-        tg.close();
+        btn.innerText = "Verifying...";
+        tg.sendData("unlock:" + token);
+        // tg.sendData automatically closes the WebApp
       }
     }
-</script>
+  </script>
 </body>
 </html>
