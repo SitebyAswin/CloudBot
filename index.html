@@ -4,44 +4,46 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <!-- ✅ Monetag script -->
-  <script src='//libtl.com/sdk.js'
+  <script src="https://libtl.com/sdk.js"
           data-zone='10913884'
           data-sdk='show_10913884'></script>
 </head>
 
 <body>
-  <h3 id="status">🔄 Loading ad...</h3>
-  <button id="continueBtn" style="display:none;" onclick="continueToBot()">
-    Continue
-  </button>
+  <h3 id="status">🔓 Click below to unlock</h3>
+
+  <button onclick="runAd()">🎬 Watch Ad</button>
 
   <script>
     const tg = window.Telegram.WebApp;
+    tg.expand();
+
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
 
-    let adCompleted = false;
-
     function runAd() {
-    if (typeof show_10913884 === "function") {
+      if (typeof show_10913884 === "function") {
+        document.getElementById("status").innerText = "⏳ Loading ad...";
+
         show_10913884().then(() => {
-        tg.sendData("unlock:" + token);
+          document.getElementById("status").innerText = "✅ Ad completed";
+
+          // send unlock immediately
+          tg.sendData("unlock:" + token);
+          tg.close();
+
         }).catch(() => {
-        alert("Ad not completed");
+          document.getElementById("status").innerText = "⚠️ Ad failed. Try again.";
         });
-    }
-    }
 
-    window.onload = runAd;
+        show_10913884().then(() => {
+            adCompleted = true;
+            document.getElementById("continueBtn").style.display = "block";
+        });
 
-    function continueToBot() {
-      if (!adCompleted) {
-        alert("❌ Watch ad first");
-        return;
+      } else {
+        document.getElementById("status").innerText = "❌ Ad SDK not loaded";
       }
-
-      tg.sendData("unlock:" + token);
-      tg.close();
     }
   </script>
 </body>
